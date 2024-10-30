@@ -1,0 +1,53 @@
+/* Styles pour le champ de recherche */
+input#search-input {
+  padding: 0.75rem 3rem; /* Plus de padding pour rendre l'entrée plus spacieuse */
+  font-size: 1rem; /* Augmenter la taille de la police */
+  border-radius: 0.5rem; /* Bordures arrondies */
+  border: 1px solid #ccc; /* Couleur de bordure adoucie */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Légère ombre pour le style */
+}
+
+input#search-input:focus {
+  border-color: #3b82f6; /* Couleur de bordure bleue à la mise au point */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Accentuation de l'ombre au focus */
+}
+
+/* Icône de recherche */
+img.h-6.w-6 {
+  width: 1.5rem; /* Taille de l'icône ajustée pour être légèrement plus grande */
+  height: 1.5rem;
+}
+
+/* Gestion de la position de l'icône dans le champ */
+.relative .absolute {
+  pointer-events: none; /* L'icône est cliquable uniquement via le champ de recherche */
+}
+
+
+
+
+
+/* Les Media Queries */
+
+/* Téléphone en portrait */
+@media (max-width: 480px) {
+    
+}
+  
+/* Téléphone en paysage */
+@media (min-width: 481px) and (max-width: 767px) {
+
+}
+
+/* Tablette en portrait */
+@media (min-width: 768px) and (max-width: 1024px) {
+
+}
+
+/* Tablette en paysage */
+@media (min-width: 1025px) and (max-width: 1280px) {
+
+}
+
+  

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/primeicons/1.0.0/primeicons.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/primevue/3.6.2/primevue.min.css" rel="stylesheet">
+    <title>Dashboard</title>
+</head>
+<body class="">
+
+    <app-navbar></app-navbar>
+
+    <div class="content-body grid grid-cols-12 gap-4 p-6">
+
+        <!-- Premier Div : Informations de l'utilisateur -->
+        <div class="first-block col-span-3 bg-slate-300 shadow-md rounded-xl flex flex-col items-center" style="height: calc(100vh - 120px); position: relative;">
+            <!-- Partie supérieure : bannière -->
+            <div class="w-full h-1/2 bg-cover bg-center rounded-t-lg" style="background-image: url('assets/images/banniere.jpg');"></div>
+
+            <!-- Image de profil positionnée entre les deux sections -->
+            <div class="absolute top-1/2 transform -translate-y-1/2 flex justify-center w-full">
+                <img src="assets/images/profil_femme.jpg" alt="Photo de profil" class="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg">
+            </div>
+
+            <!-- Partie inférieure : Informations de l'utilisateur -->
+            <div class="flex flex-col items-center justify-center w-full h-1/2 bg-amber-800 pt-2">
+                <h2 class="text-xl font-semibold text-white username">Nom d'utilisateur</h2>
+                <p class="text-white profession">Profession</p>
+            </div>
+        </div>
+
+
+        <!-- Deuxième Div : Fonctionnalité de Post -->
+        <div class="second-block col-span-6 flex flex-col gap-3" style="height: calc(100vh - 120px); ">
+            <div>
+                <app-post></app-post>
+            </div>
+            <div>
+                <app-post-list></app-post-list>
+            </div>
+        </div>
+
+        <!-- Troisième Div : Posts de l'Info Manager -->
+        <div class="third-block col-span-3 bg-slate-300 rounded-lg p-4 flex flex-col overflow-y-auto" style="height: calc(100vh - 120px); max-height: 400px;">
+            <!-- Exemple de messages -->
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 1</div>
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 2</div>
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 3</div>
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 4</div>
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 5 (ceci apparaîtra avec un scroll)</div>
+            <div class="message bg-white p-2 mb-2 rounded shadow">Message 6 (ceci aussi)</div>
+            <!-- Ajoutez d'autres messages ici -->
+        </div>
+
+
+    </div>
+
+</body>
+</html>

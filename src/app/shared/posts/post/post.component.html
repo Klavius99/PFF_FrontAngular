@@ -1,0 +1,38 @@
+<div class="Post flex flex-col w-full bg-slate-600 p-4 rounded-lg space-y-4">
+    <!-- Section de l'avatar et du champ de texte -->
+    <div class="flex gap-3 items-center">
+        <img src="assets/images/Coree.jpg" alt="" class="rounded-full w-12 h-12">
+        <input type="text" placeholder="Ecrivez quelque chose ici ..." 
+               class="w-full p-3 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+    
+    <!-- Section des boutons de fonctionnalité -->
+    <div class="flex justify-between items-center mt-2">
+        <!-- Bouton Photo pour télécharger une image -->
+        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerImageUpload()">
+            <img src="assets/images/image-icon.svg" alt="Photo" class="w-6 h-6">
+            <span class="text-gray-300 hover:text-white">Photo</span>
+        </div>
+
+        <!-- Bouton Vidéo pour télécharger une vidéo -->
+        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerVideoUpload()">
+            <img src="assets/icons/video-icon.svg" alt="Vidéo" class="w-6 h-6">
+            <span class="text-gray-300 hover:text-white">Vidéo</span>
+        </div>
+
+        <!-- Bouton Poster -->
+        <button class="flex items-center gap-2 bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-white">
+            <img src="assets/icons/post-icon.svg" alt="Poster" class="w-5 h-5">
+            <span>Poster</span>
+        </button>
+    </div>
+
+    <!-- Texte pour afficher le nom du fichier sélectionné -->
+    <div *ngIf="uploadedFileName" class="text-sm text-blue-400 mt-2">
+        Fichier sélectionné : {{ uploadedFileName }}
+    </div>
+
+    <!-- Inputs cachés pour uploader une image et une vidéo -->
+    <input type="file" id="imageInput" accept="image/*" style="display: none;" (change)="onFilePicked($event, 'image')">
+    <input type="file" id="videoInput" accept="video/*" style="display: none;" (change)="onFilePicked($event, 'video')">
+</div>
