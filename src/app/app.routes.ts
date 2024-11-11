@@ -8,10 +8,13 @@ import { ProfilPageComponent } from './pages/profil-page/profil-page.component';
 import { InformationComponent } from './pages/information/information.component';
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { ParametresComponent } from './pages/parametres/parametres.component';
+import { SocialPostComponent } from './pages/social-post/social-post.component';
+import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 
 export const routes: Routes = [
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
+    { path: 'forget-password', component: ForgotPasswordComponent },
   //{ path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirection vers login par défaut
 
     { path: 'dashboard', component: DashboardComponent },
@@ -23,5 +26,6 @@ export const routes: Routes = [
     { path: 'profil', component: ProfilPageComponent }, 
     
     { path: 'notification', component: NotificationComponent }, 
+    { path: 'testpost', component: SocialPostComponent }, 
 
 ];

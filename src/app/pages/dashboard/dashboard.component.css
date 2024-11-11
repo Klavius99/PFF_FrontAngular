@@ -3,14 +3,14 @@
     padding: 0;
 }
 
+
 .content-body {
-    padding: 0 90px 0 90px;
-    margin-top: 60px;
+    padding: 0 90px;
+    margin-top: 90px;
+    align-items: start;
 }
 
-.profession {
-    
-}
+
 
 .username {
     font-size: large;
@@ -18,9 +18,9 @@
 }
 
 
-
-
-
+.first-block {
+    
+}
 
 
 
@@ -28,11 +28,22 @@
 
 /* Téléphone en portrait */
 @media (max-width: 480px) {
+    *{
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-body {
+        margin-top: 5%;
+        background-color: bisque;
+    }
+
     .first-block,.third-block {
         display: none;
     }
+
     .second-block {
-        width: 100%;
+        width: fit-content;
     }
 }
   

@@ -20,4 +20,13 @@ userPhoto: any;
     return this.router.url === route;
   }
 
+
+
+  isMenuOpen = false; // État du sous-menu
+
+  // Fonction pour basculer l'état du menu
+  toggleMenu() {
+    this.isMenuOpen = !this.isMenuOpen;
+  }
+
 }

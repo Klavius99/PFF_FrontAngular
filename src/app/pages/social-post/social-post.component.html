@@ -1,0 +1,49 @@
+<div class="social-post-container">
+    <h2 class="title">Créer un post</h2>
+    <form [formGroup]="postForm" (ngSubmit)="onSubmit()" class="post-form">
+      <div>
+        <textarea
+          formControlName="text"
+          placeholder="Que voulez-vous partager ?"
+          class="text-input"
+          rows="3"
+        ></textarea>
+      </div>
+      <div>
+        <input
+          type="file"
+          (change)="onFileSelected($event)"
+          accept="image/*,video/*"
+          class="file-input"
+          #fileInput
+        />
+        <button
+          type="button"
+          (click)="fileInput.click()"
+          class="file-button"
+        >
+          Ajouter une image ou une vidéo
+        </button>
+        <span *ngIf="selectedFile" class="file-name">{{ selectedFile.name }}</span>
+      </div>
+      <div *ngIf="previewUrl" class="preview-container">
+        <img *ngIf="isImage" [src]="previewUrl" alt="Aperçu" class="preview-media" />
+        <video *ngIf="isVideo" [src]="previewUrl" controls class="preview-media"></video>
+      </div>
+      <button
+        type="submit"
+        [disabled]="postForm.invalid || isSubmitting"
+        class="submit-button"
+      >
+        {{ isSubmitting ? 'Publication en cours...' : 'Publier' }}
+      </button>
+    </form>
+    <div *ngIf="submitSuccess" class="success-message">
+      Votre post a été publié avec succès !
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    
+    <app-post-list [posts]="posts"></app-post-list>
+  </div>

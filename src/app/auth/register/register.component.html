@@ -6,37 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
-<body class="flex h-screen">
 
+<body class="flex h-screen">
   <!-- Premier bloc -->
   <div class="section-img w-1/2 flex items-center justify-center">
-    <img src="assets/images/ISEPAT_logo.png" alt="" id="logo">
+    <div class="flex flex-col justify-between py-4 px-24 text-center gap-5">
+      <h1 class="titre-1 text-white opacity-70 font-bold self-center">Rejoignez vos camarades pour collaborer et partager vos projets et vos experiences</h1>
+      <p class="text-white z-20 font-bold opacity-55">#ISEP_AMADOU_TRAORE</p>
+    </div>
   </div>
   
 
   <!-- Second bloc -->
-  <div class=" section-form w-1/2 bg-gray-300 flex items-center justify-center">
-    <form class="bg-transparent p-8  w-96 space-y-6 animate__animated animate__fadeIn">
+  <div class=" section-form w-1/2 bg-white flex items-center justify-center">
+    <form class="bg-transparent p-8  w-96 space-y-6 animate__animated animate__fadeIn object-center">
+      <div class="flex items-center center justify-center">
+        <img src="assets/images/ISEPAT_logo.png" alt="" id="logo" class="flex">
+      </div>
       <h2 class="text-2xl font-bold text-center text-gray-800">Inscription</h2>
 
       <!-- Input confirmation mot de passe -->
       <div>
-         <input type="text" name="username" id="username" class="username p-2 w-full focus:outline-amber-900">
+         <input type="text" name="username" id="username" class="bg-slate-200 username py-2 px-4 w-full focus:outline-amber-900 rounded-xl" placeholder="Nom d'utilisateur">
       </div>
 
       <!-- Input email -->
       <div>
-        <input type="email" placeholder="Adresse email" class="w-full p-2 border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300">
+        <input type="email" placeholder="Adresse email" class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300  focus:outline-amber-900 transition duration-300">
       </div>
 
       <!-- Input mot de passe -->
       <div>
-        <input type="password" placeholder="Mot de passe" class="w-full p-2 border border-gray-300 focus:outline-none focus:border-blue-500 transition duration-300">
+        <input type="password" placeholder="Mot de passe" class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300  focus:outline-amber-900 transition duration-300">
       </div>
 
       <!-- Bouton d'inscription -->
       <div>
-        <button type="submit" class="w-full bg-amber-800 text-white p-2  hover:bg-amber-900 transition duration-300 font-semibold">
+        <button type="submit" class="w-full bg-amber-800 rounded-xl text-white p-2  hover:bg-amber-900 transition duration-300 font-semibold">
           S'inscrire
         </button>
       </div>
