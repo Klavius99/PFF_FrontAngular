@@ -1,1 +1,43 @@
-<p>message-layout works!</p>
+<div class="h-[calc(100vh-200px)] overflow-y-auto border border-gray-300 p-4 mb-4">
+
+    <!-- Message de l'envoyeur -->
+     <div class="flex justify-start">
+        <div class=" bg-slate-100 w-1/2 pt-2 pb-2 pl-5 pr-5 mb-4 block rounded-xl">
+            <p class="font-bold">Nom Utilisateur</p>
+            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam at numquam autem, impedit possimus ad sint aut rem natus magni!</p>
+            <p class="text-xs text-gray-400">12:31 PM</p>
+        </div>
+     </div>
+    
+
+    <div class="flex justify-end ">
+      <div class="bg-amber-800  w-1/2 pt-2 pb-2 pl-5 pr-5 rounded-xl text-white ">
+        <p class="font-bold">Nom Utilisateur</p>
+        <p class="text-message">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus est a nulla amet ullam, iste quibusdam, tempora obcaecati reprehenderit asperiores assumenda maxime unde modi vel, maiores quae ipsa placeat. Repudiandae hic vero repellendus fugit dolorem nisi impedit corporis ullam consequatur!</p>
+        <p class="text-xs text-gray-400">12:31 PM</p>
+      </div>
+    </div>
+    <!-- Message du receveur -->
+    
+    
+    <!-- Répétez ce bloc pour chaque message -->
+  </div>
+
+
+
+
+  <!-- Champ de saisie de message -->
+  <div class="flex items-center border-t border-gray-300 pt-2">
+    <input type="text" placeholder="Tapez votre message..." class="flex-grow border rounded-lg p-2 mr-2">
+    <button class="bg-blue-500 text-white p-2 rounded-full">
+      <img src="assets/images/post-icon.png" alt="" class="w-5 h-5">
+    </button>
+
+    
+    <div class="upload-container">
+      <button class="bg-gray-300 text-black p-2 rounded-full ml-2" onclick="document.getElementById('file-upload').click();">
+          <img src="assets/images/link.png" alt="" class="w-5 h-5">
+      </button>
+      <input type="file" id="file-upload" style="display: none;" onchange="handleFileUpload(event)">
+  </div>
+  </div>

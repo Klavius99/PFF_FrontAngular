@@ -12,7 +12,7 @@
 
     <app-navbar></app-navbar>
 
-    <div class="content-body grid grid-cols-12 gap-4">
+    <div class="content-body grid grid-cols-12 gap-4 fixed">
 
         <!-- Premier Div : Informations de l'utilisateur -->
         <div class="first-block col-span-3 bg-slate-300 rounded-xl flex flex-col items-center start-0" style="height: calc(100vh - 120px);">
@@ -33,7 +33,7 @@
 
 
         <!-- Deuxième Div : Fonctionnalité de Post -->
-        <div class="second-block col-span-6 flex flex-col gap-3" style="height: calc(100vh - 120px); ">
+        <div class="second-block col-span-6 flex flex-col gap-3 overflow-y-scroll px-3 pb-5" style="height: calc(100vh - 120px); ">
             <div>
                 <app-post></app-post>
             </div>
