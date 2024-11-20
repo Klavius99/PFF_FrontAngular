@@ -34,26 +34,58 @@
     }
 
     .content-body {
+        padding: 80px 20px;
+        margin: 0;
         margin-top: 5%;
         background-color: bisque;
+        display: block;
     }
 
     .first-block,.third-block {
         display: none;
     }
 
-    .second-block {
-        width: fit-content;
-    }
 }
-  
+
 /* Téléphone en paysage */
 @media (min-width: 481px) and (max-width: 767px) {
+    *{
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-body {
+        padding: 80px 20px;
+        margin: 0;
+        margin-top: 5%;
+        background-color: bisque;
+        display: block;
+    }
+
+    .first-block,.third-block {
+        display: none;
+    }
 
 }
 
 /* Tablette en portrait */
 @media (min-width: 768px) and (max-width: 1024px) {
+    *{
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-body {
+        padding: 80px 20px 10px 20px;
+        margin: 0;
+        margin-top: 5%;
+        background-color: bisque;
+        display: block;
+    }
+
+    .first-block,.third-block {
+        display: none;
+    }
 
 }
 

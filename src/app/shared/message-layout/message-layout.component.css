@@ -1,0 +1,33 @@
+/* Message reçu : flèche sur le côté gauche */
+.message-recu {
+    position: relative;
+}
+
+.message-recu::before {
+    content: "";
+    position: absolute;
+    top: 10px; /* Positionne verticalement la flèche */
+    left: -10px; /* Place la flèche légèrement en dehors à gauche */
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-right: 10px solid #e2e8f0; /* Même couleur que le fond de la bulle */
+}
+
+/* Message envoyé : flèche sur le côté droit */
+.message-envoye {
+    position: relative;
+}
+
+.message-envoye::after {
+    content: "";
+    position: absolute;
+    top: 10px; /* Positionne verticalement la flèche */
+    right: -10px; /* Place la flèche légèrement en dehors à droite */
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 10px solid #92400e; /* Même couleur que le fond de la bulle (amber-800) */
+}

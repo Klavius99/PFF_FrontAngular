@@ -1,23 +1,30 @@
 <div class="h-[calc(100vh-200px)] overflow-y-auto border border-gray-300 p-4 mb-4">
 
-    <!-- Message de l'envoyeur -->
-     <div class="flex justify-start">
-        <div class=" bg-slate-100 w-1/2 pt-2 pb-2 pl-5 pr-5 mb-4 block rounded-xl">
-            <p class="font-bold">Nom Utilisateur</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam at numquam autem, impedit possimus ad sint aut rem natus magni!</p>
-            <p class="text-xs text-gray-400">12:31 PM</p>
-        </div>
-     </div>
-    
-
-    <div class="flex justify-end ">
-      <div class="bg-amber-800  w-1/2 pt-2 pb-2 pl-5 pr-5 rounded-xl text-white ">
-        <p class="font-bold">Nom Utilisateur</p>
-        <p class="text-message">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Natus est a nulla amet ullam, iste quibusdam, tempora obcaecati reprehenderit asperiores assumenda maxime unde modi vel, maiores quae ipsa placeat. Repudiandae hic vero repellendus fugit dolorem nisi impedit corporis ullam consequatur!</p>
-        <p class="text-xs text-gray-400">12:31 PM</p>
+    <!-- Message reçu -->
+<div class="flex justify-start">
+  <div class="message-recu bg-slate-100 w-1/2 pt-2 pb-2 pl-5 pr-5 mb-4 block rounded-xl relative">
+      <p class="font-bold">Nom Utilisateur</p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam at numquam autem, impedit possimus ad sint aut rem natus magni!</p>
+      <div class="flex justify-between">
+          <p class="text-xs text-gray-400">12:31 PM</p>
+          <p class="text-gray-400">Reçu</p>
       </div>
-    </div>
-    <!-- Message du receveur -->
+  </div>
+</div>
+
+<!-- Message envoyé -->
+<div class="flex justify-end">
+  <div class="message-envoye bg-amber-800 w-1/2 pt-2 pb-2 pl-5 pr-5 rounded-xl text-white relative">
+      <p class="font-bold">Nom Utilisateur</p>
+      <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus est a nulla amet ullam, iste quibusdam, tempora obcaecati reprehenderit asperiores assumenda maxime unde modi vel, maiores quae ipsa placeat.</p>
+      <div class="flex justify-between">
+          <p class="text-xs text-gray-400">12:31 PM</p>
+          <p class="text-gray-400">Envoyé</p>
+      </div>
+  </div>
+</div>
+
+    
     
     
     <!-- Répétez ce bloc pour chaque message -->

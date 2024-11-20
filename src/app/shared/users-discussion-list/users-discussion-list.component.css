@@ -1,0 +1,6 @@
+.text-messagemessage {
+  width: 200px;
+  white-space: nowrap;    /* Empêche le texte de s'étendre sur plusieurs lignes */
+  overflow: hidden;       /* Cache la partie du texte qui dépasse */
+  text-overflow: ellipsis;
+}

@@ -7,15 +7,17 @@ import { NotificationComponent } from './pages/notification/notification.compone
 import { ProfilPageComponent } from './pages/profil-page/profil-page.component';
 import { InformationComponent } from './pages/information/information.component';
 import { SearchPageComponent } from './pages/search-page/search-page.component';
-import { ParametresComponent } from './pages/parametres/parametres.component';
-import { SocialPostComponent } from './pages/social-post/social-post.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
+import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
+    { path: '', redirectTo: 'register', pathMatch: 'full' }, // Redirection par défaut
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'forget-password', component: ForgotPasswordComponent },
-  //{ path: '', redirectTo: '/login', pathMatch: 'full' }, // Redirection vers login par défaut
+    
+
+    {path : 'dashboard-admin', component: AdminDashboardComponent},
 
     { path: 'dashboard', component: DashboardComponent },
     { path: 'discussion', component: DiscussionComponent},
@@ -25,7 +27,6 @@ export const routes: Routes = [
     
     { path: 'profil', component: ProfilPageComponent }, 
     
-    { path: 'notification', component: NotificationComponent }, 
-    { path: 'testpost', component: SocialPostComponent }, 
+    { path: 'notification', component: NotificationComponent },
 
 ];

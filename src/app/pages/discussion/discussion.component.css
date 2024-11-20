@@ -1,4 +1,42 @@
 .content-body {
     padding: 0 90px;
-    margin-top: 85px;
+    margin-top: 80px;
+}
+
+
+/* Les Media Queries */
+
+/* Téléphone en portrait */
+@media (max-width: 480px) {
+    .content-body {
+        margin: 90px 10px 20px 10px;
+        padding: 0;
+        display: flex;
+    }
+    .message-layout {
+        display: none;
+        
+    }
+    .user_group_id {
+        width: max-content;
+        display: block;
+    }
+
+}
+
+/* Téléphone en paysage */
+@media (min-width: 481px) and (max-width: 767px) {
+    
+
+}
+
+/* Tablette en portrait */
+@media (min-width: 768px) and (max-width: 1024px) {
+    
+
+}
+
+/* Tablette en paysage */
+@media (min-width: 1025px) and (max-width: 1280px) {
+
 }
