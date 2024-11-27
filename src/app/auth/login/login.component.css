@@ -1,7 +1,7 @@
 #logo {
     width: 100px;
     height: 100px;
-  }
+}
   
 .Forgetpass {
     text-decoration: none;
@@ -16,7 +16,7 @@ input:focus {
   position: relative;
   background-image: url('/assets/images/ISEPD.jpg'); /* Chemin de votre image de fond */
   background-size: cover;
-
+  animation: anim 20s ease-in-out infinite; /* Boucle infinie pour l'animation */
 }
 
 /* Superposition sombre avec ::before */
@@ -29,6 +29,20 @@ input:focus {
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5); /* Ajustez l'opacité pour le niveau d'assombrissement souhaité */
   z-index: 1;
+}
+
+
+/* Animation de l'image de fond */
+@keyframes anim {
+  0% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: 15%;
+  }
+  100% {
+    background-position: 0% 0;
+  }
 }
 
 .titre-1 {

@@ -1,0 +1,22 @@
+/* Styles pour les formulaires */
+input.ng-invalid.ng-touched {
+    border-color: #ef4444;
+}
+
+input.ng-valid.ng-touched {
+    border-color: #10b981;
+}
+
+/* Styles pour les messages */
+.success-message {
+    @apply bg-green-100 text-green-700 p-4 rounded-md mb-4;
+}
+
+.error-message {
+    @apply bg-red-100 text-red-700 p-4 rounded-md mb-4;
+}
+
+/* Styles pour les boutons */
+button:disabled {
+    @apply opacity-50 cursor-not-allowed;
+}

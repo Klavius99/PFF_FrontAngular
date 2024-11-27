@@ -9,24 +9,59 @@ import { InformationComponent } from './pages/information/information.component'
 import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
+import { InfoManagerDashboardComponent } from './Admin/info-manager-dashboard/info-manager-dashboard.component';
+import { roleGuard } from './guards/role.guard';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'register', pathMatch: 'full' }, // Redirection par défaut
+    // Routes publiques
+    { path: '', redirectTo: 'register', pathMatch: 'full' },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'forget-password', component: ForgotPasswordComponent },
     
+    // Routes protégées par authentification et rôles
+    {
+        path: 'dashboard-admin',
+        component: AdminDashboardComponent,
+        canActivate: [authGuard, roleGuard(['admin', 'super_admin'])]
+    },
+    {
+        path: 'dashboard-info',
+        component: InfoManagerDashboardComponent,
+        canActivate: [authGuard, roleGuard(['info_manager'])]
+    },
+    {
+        path: 'dashboard',
+        component: DashboardComponent,
+        canActivate: [authGuard, roleGuard(['formateur', 'apprenant'])]
+    },
+    {
+        path: 'discussion',
+        component: DiscussionComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'info&evenement',
+        component: InformationComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'SearchPage',
+        component: SearchPageComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'notification',
+        component: NotificationComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'profil',
+        component: ProfilPageComponent,
+        canActivate: [authGuard]
+    },
 
-    {path : 'dashboard-admin', component: AdminDashboardComponent},
-
-    { path: 'dashboard', component: DashboardComponent },
-    { path: 'discussion', component: DiscussionComponent},
-    { path: 'info&evenement', component: InformationComponent },
-    
-    { path: 'SearchPage', component: SearchPageComponent }, 
-    
-    { path: 'profil', component: ProfilPageComponent }, 
-    
-    { path: 'notification', component: NotificationComponent },
-
+    // Route par défaut (404)
+    { path: '**', redirectTo: 'dashboard' }
 ];

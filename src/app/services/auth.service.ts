@@ -1,34 +1,99 @@
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, tap, map } from 'rxjs';
+import { User, AuthResponse } from '../models/user';
+import { Router } from '@angular/router';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  
-  private apiUrl = 'http://localhost/api/register'; // Changez ceci avec l'URL de votre API
+  private apiUrl = environment.apiUrl;
+  private currentUserSubject = new BehaviorSubject<User | null>(null);
+  currentUser$ = this.currentUserSubject.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {
+    this.loadStoredUser();
+  }
 
-  register(data: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
+  private loadStoredUser(): void {
+    const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
+    if (storedUser && storedToken) {
+      this.currentUserSubject.next(JSON.parse(storedUser));
+    }
+  }
 
-    return this.http.post(this.apiUrl, JSON.stringify(data), { headers }).pipe(
-      catchError(this.handleError)
+  register(userData: Omit<User, 'id' | 'role' | 'status' | 'created_at'>): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, userData).pipe(
+      tap((response: any) => {
+        if (response.user && response.token) {
+          this.handleAuthentication(response);
+        }
+      })
     );
   }
 
-  private handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      console.error('Une erreur est survenue:', error.error.message);
-    } else {
-      console.error(`Backend retourné le code ${error.status}, ` +
-                    `body était: ${error.error}`);
-    }
-    return throwError('Quelque chose s\'est mal passé; veuillez réessayer plus tard.');
+  login(credentials: Pick<User, 'email' | 'password'>): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      tap(response => this.handleAuthentication(response))
+    );
+  }
+
+  private handleAuthentication(response: AuthResponse): void {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+    this.currentUserSubject.next(response.user);
+  }
+
+  logout(): Observable<void> {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.currentUserSubject.next(null);
+    return new Observable<void>(observer => {
+      observer.next();
+      observer.complete();
+    });
+  }
+
+  isAuthenticated(): Observable<boolean> {
+    return this.currentUser$.pipe(
+      map(user => !!user)
+    );
+  }
+
+  getCurrentUser(): Observable<User | null> {
+    return this.currentUser$;
+  }
+
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
+  hasRole(allowedRoles: string[]): Observable<boolean> {
+    return this.currentUser$.pipe(
+      map(user => {
+        if (!user || !user.role) return false;
+        return allowedRoles.includes(user.role);
+      })
+    );
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/refresh-token`, {}).pipe(
+      tap(response => this.handleAuthentication(response))
+    );
+  }
+
+  forgotPassword(email: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/forgot-password`, { email });
+  }
+
+  resetPassword(token: string, newPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword });
   }
 }

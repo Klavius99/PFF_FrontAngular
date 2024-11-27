@@ -4,7 +4,6 @@
     <base href="">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
 </head>
 
 <body class="flex h-screen">
@@ -16,35 +15,58 @@
     </div>
   </div>
   
-
   <!-- Second bloc -->
-  <div class=" section-form w-1/2 bg-white flex items-center justify-center">
-    <form class="bg-transparent p-8  w-96 space-y-6 animate__animated animate__fadeIn object-center">
+  <div class="section-form w-1/2 bg-white flex items-center justify-center">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="bg-transparent p-8 w-96 space-y-6 animate__animated animate__fadeIn object-center">
       <div class="flex items-center center justify-center">
         <img src="assets/images/ISEPAT_logo.png" alt="" id="logo" class="flex">
       </div>
       <h2 class="text-2xl font-bold text-center text-gray-800">Inscription</h2>
 
+      <!-- Message d'erreur général -->
+      <div *ngIf="errorMessage" class="text-red-500 text-sm text-center">
+        {{ errorMessage }}
+      </div>
+
       <!-- Input nom d'utilisateur -->
       <div>
-         <input type="text" name="username" id="username" class="bg-slate-200 username py-2 px-4 w-full focus:outline-amber-900 rounded-xl" placeholder="Nom d'utilisateur" autocomplete="off">
+        <input type="text" formControlName="username" class="bg-slate-200 username py-2 px-4 w-full focus:outline-amber-900 rounded-xl" placeholder="Nom d'utilisateur" autocomplete="off">
       </div>
 
       <!-- Input email -->
       <div>
-        <input type="email" placeholder="Adresse email" class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300  focus:outline-amber-900 transition duration-300">
+        <input type="email" formControlName="email" placeholder="Adresse email" class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300 focus:outline-amber-900 transition duration-300">
       </div>
 
-      <!-- Input mot de passe -->
-      <div>
-        <input type="password" placeholder="Mot de passe" class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300  focus:outline-amber-900 transition duration-300">
+      <!-- Input mot de passe avec indicateur de force -->
+      <div class="space-y-2">
+        <input type="password" 
+               formControlName="password" 
+               placeholder="Mot de passe" 
+               (focus)="isPasswordFocused = true"
+               (blur)="isPasswordFocused = false"
+               class="bg-slate-200 w-full py-2 px-4 rounded-xl border border-gray-300 focus:outline-amber-900 transition duration-300">
+        
+        <!-- Barre de progression de la force du mot de passe -->
+        <div *ngIf="isPasswordFocused" class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div [style.width]="getProgressWidth()"
+               [class]="getProgressColorClass() + ' h-full transition-all duration-300'">
+          </div>
+        </div>
+      
+        <!-- Feedback sur la force du mot de passe -->
+        <div *ngIf="isPasswordFocused" [class]="'text-sm ' + (passwordStrength.score >= 3 ? 'text-green-600' : 'text-gray-600')">
+          {{ passwordStrength.feedback }}
+        </div>
       </div>
 
       <!-- Bouton d'inscription -->
       <div>
-        <button type="submit" class="w-full bg-amber-800 rounded-xl text-white p-2  hover:bg-amber-900 transition duration-300 font-semibold">
-          S'inscrire
-        </button>
+        <button type="submit" 
+        [disabled]="registerForm.invalid || passwordStrength.score < 3" 
+        class="w-full bg-amber-800 rounded-xl text-white p-2 hover:bg-amber-900 transition duration-300 font-semibold disabled:opacity-50 disabled:cursor-not-allowed">
+  S'inscrire
+</button>
       </div>
 
       <!-- Lien vers la connexion -->
@@ -54,9 +76,5 @@
       </div>
     </form>
   </div>
-
-
-  
 </body>
-
 </html>
