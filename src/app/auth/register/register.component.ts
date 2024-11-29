@@ -15,6 +15,7 @@ import { PasswordStrengthService, PasswordStrength } from '../../services/passwo
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage: string = '';
+  showPassword: boolean = false;
   passwordStrength: PasswordStrength = {
     score: 0,
     feedback: '',
@@ -45,6 +46,10 @@ export class RegisterComponent {
     this.registerForm.get('password')?.valueChanges.subscribe(password => {
       this.passwordStrength = this.passwordStrengthService.checkStrength(password);
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   getProgressWidth(): string {
@@ -84,6 +89,7 @@ export class RegisterComponent {
         } else if (err.status === 400) {
           this.errorMessage = 'Les données fournies sont invalides.';
         } else {
+          console.log('Données du formulaire:', this.registerForm.value);
           this.errorMessage = 'Une erreur est survenue lors de l\'inscription.';
         }
       }

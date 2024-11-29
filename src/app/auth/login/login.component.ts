@@ -14,6 +14,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   errorMessage: string = '';
+  showPassword: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -24,6 +25,10 @@ export class LoginComponent {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required]
     });
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   onSubmit() {

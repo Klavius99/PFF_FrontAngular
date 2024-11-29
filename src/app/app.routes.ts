@@ -15,26 +15,37 @@ import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
     // Routes publiques
-    { path: '', redirectTo: 'register', pathMatch: 'full' },
+    { path: '', redirectTo: 'login', pathMatch: 'full' },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'forget-password', component: ForgotPasswordComponent },
     
     // Routes protégées par authentification et rôles
     {
-        path: 'dashboard-admin',
-        component: AdminDashboardComponent,
-        canActivate: [authGuard, roleGuard(['admin', 'super_admin'])]
-    },
-    {
-        path: 'dashboard-info',
-        component: InfoManagerDashboardComponent,
-        canActivate: [authGuard, roleGuard(['info_manager'])]
-    },
-    {
         path: 'dashboard',
-        component: DashboardComponent,
-        canActivate: [authGuard, roleGuard(['formateur', 'apprenant'])]
+        canActivate: [authGuard],
+        children: [
+            {
+                path: '',
+                redirectTo: 'default',
+                pathMatch: 'full'
+            },
+            {
+                path: 'default',
+                component: DashboardComponent,
+                canActivate: [roleGuard(['formateur', 'apprenant'])]
+            },
+            {
+                path: 'admin',
+                component: AdminDashboardComponent,
+                canActivate: [roleGuard(['admin'])]
+            },
+            {
+                path: 'info-manager',
+                component: InfoManagerDashboardComponent,
+                canActivate: [roleGuard(['info_manager'])]
+            }
+        ]
     },
     {
         path: 'discussion',
@@ -63,5 +74,5 @@ export const routes: Routes = [
     },
 
     // Route par défaut (404)
-    { path: '**', redirectTo: 'dashboard' }
+    { path: '**', redirectTo: 'login' }
 ];

@@ -116,7 +116,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
 
       this.userService.createInfoManager(infoManagerData).subscribe({
         next: (response) => {
-          this.successMessage = 'Gestionnaire d\'informations créé avec succès !';
+          this.successMessage = 'Info Manager créé avec succès !';
           this.errorMessage = '';
           this.infoManagerForm.reset();
           this.loadStatistics();
@@ -125,7 +125,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
           }, 3000);
         },
         error: (error) => {
-          this.errorMessage = error.error?.message || 'Erreur lors de la création du gestionnaire d\'informations';
+          this.errorMessage = error.error?.message || 'Erreur lors de la création du  l\'Info Manager';
           this.successMessage = '';
           console.error('Erreur:', error);
           setTimeout(() => {

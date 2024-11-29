@@ -2,28 +2,43 @@
     <!-- Section de l'avatar et du champ de texte -->
     <div class="flex gap-3 items-center">
         <img src="assets/images/profil_anime.jpeg" alt="" class="profil-photo">
-        <input type="text" placeholder="Ecrivez quelque chose ici ..." 
-               class="w-full p-2 rounded-lg bg-slate-700 text-white placeholder-gray-400  focus:ring-2 focus:ring-amber-800">
+        <input type="text" 
+               [(ngModel)]="postText"
+               placeholder="Ecrivez quelque chose ici ..." 
+               class="w-full p-2 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-800">
+    </div>
+
+    <!-- Prévisualisation de l'image -->
+    <div *ngIf="previewUrl" class="mt-2 relative">
+        <img [src]="previewUrl" 
+             alt="Prévisualisation" 
+             class="rounded-lg max-h-48 w-auto">
+        <button (click)="resetForm()" 
+                class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center">
+            <span>&times;</span>
+        </button>
     </div>
     
     <!-- Section des boutons de fonctionnalité -->
     <div class="flex justify-between items-center mt-2">
         <!-- Bouton Photo pour télécharger une image -->
-        <div class=" flex items-center gap-2 cursor-pointer" (click)="triggerImageUpload()">
+        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerImageUpload()">
             <img src="assets/images/image-icon.png" alt="Photo" class="w-6 h-6 button-file">
             <span class="text-gray-300 hover:text-white">Photo</span>
         </div>
 
         <!-- Bouton Vidéo pour télécharger une vidéo -->
-        <div class=" flex items-center gap-2 cursor-pointer" (click)="triggerVideoUpload()">
+        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerVideoUpload()">
             <img src="assets/images/video-icon.png" alt="Vidéo" class="w-6 h-6 button-file">
             <span class="text-gray-300 hover:text-white">Vidéo</span>
         </div>
 
         <!-- Bouton Poster -->
-        <button (click)="onPost()" class=" flex items-center gap-2 bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-white">
+        <button (click)="onPost()" 
+                [disabled]="isSubmitting"
+                class="flex items-center gap-2 bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed">
             <img src="assets/images/post-icon.png" alt="Poster" class="w-5 h-5 button-file">
-            <span>Poster</span>
+            <span>{{ isSubmitting ? 'Publication...' : 'Poster' }}</span>
         </button>
     </div>
 
