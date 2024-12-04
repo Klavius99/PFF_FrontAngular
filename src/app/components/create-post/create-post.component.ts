@@ -95,10 +95,10 @@ export class CreatePostComponent {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
 
-    // Vérification de la taille du fichier (2MB max)
-    const maxSize = 2 * 1024 * 1024; // 2MB en octets
+    // Vérification de la taille du fichier (100MB max)
+    const maxSize = 100 * 1024 * 1024; // 100MB en octets
     if (file.size > maxSize) {
-      this.error = 'La taille de l\'image ne doit pas dépasser 2MB';
+      this.error = 'La taille du fichier ne doit pas dépasser 100MB';
       return;
     }
 

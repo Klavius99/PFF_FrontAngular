@@ -8,51 +8,53 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/primevue/3.6.2/primevue.min.css" rel="stylesheet">
     <title>Dashboard</title>
 </head>
-<body class="">
-
+<body>
     <app-navbar></app-navbar>
 
-    <div class="content-body grid grid-cols-12 gap-4 fixed">
+    <div class="container w-full">
+        <div class="content-body grid grid-cols-12 gap-4 mt-14">
+            <!-- Premier Div : Informations de l'utilisateur -->
+            <div class="first-block col-span-12 md:col-span-3 bg-slate-300 rounded-xl flex flex-col items-center" style="height: calc(100vh - 120px);">
+                <!-- Partie supérieure : bannière -->
+                <div class="w-full h-1/2 bg-cover bg-center rounded-t-lg" style="background-image: url('assets/images/banniere.jpg');"></div>
 
-        <!-- Premier Div : Informations de l'utilisateur -->
-        <div class="first-block col-span-3 bg-slate-300 rounded-xl flex flex-col items-center start-0" style="height: calc(100vh - 120px);">
-            <!-- Partie supérieure : bannière -->
-            <div class="w-full h-1/2 bg-cover bg-center rounded-t-lg" style="background-image: url('assets/images/banniere.jpg');"></div>
+                <!-- Image de profil positionnée entre les deux sections -->
+                <div class="absolute top-1/2 transform -translate-y-1/2 flex justify-center w-full">
+                    <img [src]="currentUser?.profile_picture || 'assets/images/profil.jpeg'" 
+                         [alt]="currentUser?.username" 
+                         class="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg">
+                </div>
 
-            <!-- Image de profil positionnée entre les deux sections -->
-            <div class="absolute top-1/2 transform -translate-y-1/2 flex justify-center w-full">
-                <img src="assets/images/profil_anime.jpeg" alt="Photo de profil" class="w-40 h-40 rounded-full border-4 border-white object-cover shadow-lg">
+                <!-- Partie inférieure : Informations de l'utilisateur -->
+                <div class="flex flex-col items-center justify-center w-full h-1/2 bg-amber-800 pt-2 rounded-b-xl">
+                    <div *ngIf="loading" class="text-white">
+                        Chargement...
+                    </div>
+                    <div *ngIf="error" class="text-red-500">
+                        {{ error }}
+                    </div>
+                    <div *ngIf="!loading && !error && currentUser">
+                        <h2 class="text-xl font-semibold text-white username">{{ currentUser.username }}</h2>
+                        <p class="text-white profession">{{ currentUser.role }}</p>
+                    </div>
+                </div>
             </div>
 
-            <!-- Partie inférieure : Informations de l'utilisateur -->
-            <div class="flex flex-col items-center justify-center w-full h-1/2 bg-amber-800 pt-2">
-                <h2 class="text-xl font-semibold text-white username">Nom d'utilisateur</h2>
-                <p class="text-white profession">Profession</p>
-            </div>
-        </div>
-
-
-        <!-- Deuxième Div : Fonctionnalité de Post -->
-        <div class="second-block col-span-6 flex flex-col gap-3 overflow-y-scroll px-3 pb-5" style="height: calc(100vh - 120px); ">
-            <div>
-                <app-post></app-post>
-            </div>
-            <div>
+            <!-- Deuxième Div : Fonctionnalité de Post -->
+            <div class="second-block col-span-12 md:col-span-6 flex flex-col gap-3 overflow-y-auto px-3 pb-5" style="height: calc(100vh - 120px);">
+                <app-create-post></app-create-post>
                 <app-post-list></app-post-list>
             </div>
+
+            <!-- Troisième Div : Posts de l'Info Manager -->
+            <div class="third-block col-span-12 md:col-span-3 bg-white rounded-lg px-2 py-4 flex flex-col" style="height: calc(100vh - 120px);">
+                <h3 class="text-lg font-semibold mb-4 text-gray-800 px-2 self-center">Informations importantes</h3>
+                <!-- Messages -->
+                <div class="message bg-gray-100 p-4 mb-2 rounded shadow hover:bg-gray-200 transition-colors">Evenement 1</div>
+                <div class="message bg-gray-100 p-4 mb-2 rounded shadow hover:bg-gray-200 transition-colors">Evenement 2</div>
+                <div class="message bg-gray-100 p-4 mb-2 rounded shadow hover:bg-gray-200 transition-colors">Evenement 3</div>
+            </div>
         </div>
-
-        <!-- Troisième Div : Posts de l'Info Manager -->
-        <div class="third-block col-span-3 bg-slate-300 rounded-lg px-2 py-4 flex flex-col shadow-2xl" style="height: calc(100vh - 120px);">
-            <!-- Exemple de messages -->
-            <div class="message bg-white p-4 mb-2 rounded shadow">Evenement 1</div>
-            <div class="message bg-white p-4 mb-2 rounded shadow">Evenement 2</div>
-            <div class="message bg-white p-4 mb-2 rounded shadow">Evenement 3</div>
-            <!-- Ajoutez d'autres messages ici -->
-        </div>
-
-
     </div>
-
 </body>
 </html>

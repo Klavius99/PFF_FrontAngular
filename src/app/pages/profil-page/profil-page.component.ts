@@ -1,6 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NavbarComponent } from '../../shared/navbar/navbar.component';
+import { ActivatedRoute } from '@angular/router';
+import { UserService } from '../../services/user.service';
+import { User } from '../../models/user';
 
 interface Notification {
   id: number;
@@ -17,58 +20,58 @@ interface Notification {
   templateUrl: './profil-page.component.html',
   styleUrls: ['./profil-page.component.css']
 })
-export class ProfilPageComponent {
+export class ProfilPageComponent implements OnInit {
   // Informations personnelles
-  userName: string = 'Weuz Dieye';
-  profession: string = 'Developpeur front end';
-  level: string = 'Licence 2';
-  email: string = 'o.dieye4@isepdiamniadio.edu.sn';
-  dateNaissance: string = '15 Mars 1990';
-  lieuNaissance: string = 'Dakar, Sénégal';
-  telephone: string = '+221 77 123 45 67';
-  adresse: string = 'Keur Massar, Dakar';
+  userName: string = '';
+  profession: string = '';
+  level: string = '';
+  email: string = '';
+  dateNaissance: string = '';
+  lieuNaissance: string = '';
+  telephone: string = '';
+  adresse: string = '';
 
   // Informations académiques
   parcours = {
-    universite: "Institut Supérieur d'Enseignement Professionnel",
-    departement: 'Génie Informatique et Télécommunications',
-    specialisation: 'Développement Web et Mobile',
-    anneeEntree: '2020',
-    promotion: '2024',
-    moyenne: '16.5/20'
+    universite: "",
+    departement: '',
+    specialisation: '',
+    anneeEntree: '',
+    promotion: '',
+    moyenne: ''
   };
 
   competences = [
-    { categorie: 'Langages', items: ['Java', 'Python', 'JavaScript', 'TypeScript', 'PHP'] },
-    { categorie: 'Frameworks', items: ['Angular', 'Spring Boot', 'Laravel', 'React'] },
-    { categorie: 'Base de données', items: ['MySQL', 'PostgreSQL', 'MongoDB'] },
-    { categorie: 'Outils', items: ['Git', 'Docker', 'Jenkins', 'Jira'] }
+    { categorie: 'Langages', items: [] },
+    { categorie: 'Frameworks', items: [] },
+    { categorie: 'Base de données', items: [] },
+    { categorie: 'Outils', items: [] }
   ];
 
   activites = [
-    { type: 'Club', nom: 'Club Informatique ISEP', role: 'Président' },
-    { type: 'Association', nom: 'Association des Étudiants en Génie Logiciel', role: 'Membre actif' },
-    { type: 'Projet', nom: 'Système de Gestion Académique', role: 'Chef de projet' }
+    { type: '', nom: '', role: '' },
+    { type: '', nom: '', role: '' },
+    { type: '', nom: '', role: '' }
   ];
 
   certifications = [
-    { nom: 'AWS Certified Developer', date: '2023', organisme: 'Amazon Web Services' },
-    { nom: 'Angular Advanced', date: '2023', organisme: 'Google' },
-    { nom: 'Scrum Master', date: '2022', organisme: 'Scrum.org' }
+    { nom: '', date: '', organisme: '' },
+    { nom: '', date: '', organisme: '' },
+    { nom: '', date: '', organisme: '' }
   ];
 
   stages = [
     {
-      entreprise: 'Orange Digital Center',
-      poste: 'Développeur Full Stack',
-      periode: 'Juin - Septembre 2023',
-      description: "Développement d'une plateforme de gestion de projets innovants"
+      entreprise: '',
+      poste: '',
+      periode: '',
+      description: ""
     },
     {
-      entreprise: 'Sonatel Academy',
-      poste: 'Développeur Frontend',
-      periode: 'Juillet - Août 2022',
-      description: "Création d'interfaces utilisateur pour applications web"
+      entreprise: '',
+      poste: '',
+      periode: '',
+      description: ""
     }
   ];
 
@@ -96,6 +99,54 @@ export class ProfilPageComponent {
       read: false
     }
   ];
+
+  constructor(
+    private route: ActivatedRoute,
+    private userService: UserService
+  ) { }
+
+  ngOnInit() {
+    // Récupérer l'ID de l'URL
+    this.route.params.subscribe(params => {
+      const userId = params['id'];
+      if (userId) {
+        // Si un ID est fourni, charger les informations de cet utilisateur
+        this.loadUserProfile(userId);
+      } else {
+        // Si pas d'ID, charger le profil de l'utilisateur connecté
+        this.loadCurrentUserProfile();
+      }
+    });
+  }
+
+  private loadUserProfile(userId: number) {
+    this.userService.getUserById(userId).subscribe({
+      next: (user: User) => {
+        this.updateProfileInfo(user);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du profil:', error);
+      }
+    });
+  }
+
+  private loadCurrentUserProfile() {
+    this.userService.getCurrentUser().subscribe({
+      next: (user: User) => {
+        this.updateProfileInfo(user);
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement du profil:', error);
+      }
+    });
+  }
+
+  private updateProfileInfo(user: User) {
+    this.userName = user.username;
+    this.profession = user.role || '';
+    this.email = user.email || '';
+    // Mettre à jour les autres champs en fonction des données disponibles
+  }
 
   changeSection(section: string) {
     this.activeSection = section;

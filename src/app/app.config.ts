@@ -4,6 +4,8 @@ import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/
 import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { importProvidersFrom } from '@angular/core';
+import { PostModule } from './shared/posts/post/post.module';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -12,6 +14,7 @@ export const appConfig: ApplicationConfig = {
       withFetch(),
       withInterceptors([authInterceptor])
     ),
-    provideAnimationsAsync()
+    provideAnimationsAsync(),
+    importProvidersFrom(PostModule)
   ]
 };

@@ -10,6 +10,7 @@ import { SearchPageComponent } from './pages/search-page/search-page.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password.component';
 import { AdminDashboardComponent } from './Admin/admin-dashboard/admin-dashboard.component';
 import { InfoManagerDashboardComponent } from './Admin/info-manager-dashboard/info-manager-dashboard.component';
+import { PostDetailsComponent } from './shared/posts/post-details/post-details.component';
 import { roleGuard } from './guards/role.guard';
 import { authGuard } from './guards/auth.guard';
 
@@ -48,6 +49,11 @@ export const routes: Routes = [
         ]
     },
     {
+        path: 'posts/:id',
+        component: PostDetailsComponent,
+        canActivate: [authGuard]
+    },
+    {
         path: 'discussion',
         component: DiscussionComponent,
         canActivate: [authGuard]
@@ -65,6 +71,11 @@ export const routes: Routes = [
     {
         path: 'notification',
         component: NotificationComponent,
+        canActivate: [authGuard]
+    },
+    {
+        path: 'profil/:id',
+        component: ProfilPageComponent,
         canActivate: [authGuard]
     },
     {

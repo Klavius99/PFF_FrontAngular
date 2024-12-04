@@ -1,130 +1,185 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
 import { FormsModule } from '@angular/forms';
+import { Post } from '../../../models/post';
 import { PostService } from '../../../services/post.service';
+import { AuthService } from '../../../services/auth.service';
+import { PostModule } from './post.module';
+import { TimeAgoPipe } from './time-ago.pipe';
 
 @Component({
   selector: 'app-post',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    ButtonModule,
+    PostModule,
+    FormsModule,
+    DialogModule
+  ],
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.css']
 })
-export class PostComponent {
-  selectedImage: File | null = null;
-  selectedVideo: File | null = null;
-  uploadedFileName: string | null = null;
-  postText: string = '';
-  isSubmitting = false;
-  previewUrl: string | null = null;
+export class PostComponent implements OnInit {
+  @Input() post?: Post;
+  isLiked: boolean = false;
+  likesCount: number = 0;
+  currentUser: any;
+  error: string | null = null;
+  commentText: string = '';
+  isSubmittingComment: boolean = false;
+  displayModal: boolean = false;
+  comments: any[] = [];
+  isLoadingComments: boolean = false;
 
-  constructor(private postService: PostService) {}
+  constructor(
+    private postService: PostService,
+    private authService: AuthService,
+    private router: Router
+  ) { }
 
-  // Méthodes pour déclencher l'upload des fichiers
-  triggerImageUpload() {
-    const imageInput = document.getElementById('imageInput') as HTMLInputElement;
-    imageInput.click();
+  ngOnInit(): void {
+    console.log('Post:', this.post);
+    if (this.post?.id) {
+      this.checkIfLiked();
+      this.countLikes();
+      this.countComments();
+    }
+    this.getCurrentUser();
   }
 
-  triggerVideoUpload() {
-    const videoInput = document.getElementById('videoInput') as HTMLInputElement;
-    videoInput.click();
-  }
-
-  // Gestion de la sélection de fichier
-  onFilePicked(event: Event, fileType: string) {
-    const file = (event.target as HTMLInputElement).files![0];
-    if (file) {
-      // Vérifie le type de fichier
-      if ((fileType === 'image' && !file.type.startsWith('image')) ||
-          (fileType === 'video' && !file.type.startsWith('video'))) {
-        alert(`Veuillez sélectionner un fichier ${fileType} valide.`);
-        return;
-      }
-
-      this.uploadedFileName = file.name;
-
-      if (fileType === 'image') {
-        this.selectedImage = file;
-        this.selectedVideo = null; // Réinitialise la vidéo si une image est sélectionnée
-        
-        // Ajouter la prévisualisation de l'image
-        const reader = new FileReader();
-        reader.onload = () => {
-          this.previewUrl = reader.result as string;
-        };
-        reader.readAsDataURL(file);
-      } else if (fileType === 'video') {
-        this.selectedVideo = file;
-        this.selectedImage = null; // Réinitialise l'image si une vidéo est sélectionnée
-        this.previewUrl = null;
-      }
-    }
-  }
-
-  // Méthode pour publier le post
-  onPost() {
-    if (this.isSubmitting) return;
-    if (!this.postText && !this.selectedImage && !this.selectedVideo) {
-      alert("Le post doit contenir du texte, une image ou une vidéo.");
-      return;
-    }
-
-    this.isSubmitting = true;
-
-    const formData = new FormData();
-    formData.append('content', this.postText.trim());
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
-    }
-    if (this.selectedVideo) {
-      formData.append('video', this.selectedVideo);
-    }
-
-    console.log('Envoi du post...');
-    console.log('Contenu:', this.postText);
-    console.log('Image:', this.selectedImage);
-    console.log('Vidéo:', this.selectedVideo);
-
-    this.postService.createPost(formData).subscribe({
-      next: (response) => {
-        console.log('Post publié avec succès', response);
-        this.resetForm();
-        this.isSubmitting = false;
-        window.dispatchEvent(new CustomEvent('postCreated'));
+  private getCurrentUser(): void {
+    this.authService.getCurrentUser().subscribe({
+      next: (user) => {
+        this.currentUser = user;
       },
       error: (error) => {
-        console.error('Erreur lors de la création du post:', error);
-        let errorMessage = 'Une erreur est survenue lors de la publication du post';
-        
-        if (error.status === 0) {
-          errorMessage = 'Impossible de se connecter au serveur. Vérifiez votre connexion internet et que le serveur est en cours d\'exécution.';
-        } else if (error.status === 500) {
-          errorMessage = 'Une erreur serveur est survenue. Veuillez réessayer plus tard.';
-        } else if (error.status === 422 && error.error) {
-          if (error.error.errors) {
-            const validationErrors = Object.values(error.error.errors).flat();
-            errorMessage = validationErrors.join('\n');
-          } else if (error.error.message) {
-            errorMessage = error.error.message;
-          }
-        } else if (error.status === 401) {
-          errorMessage = 'Vous devez être connecté pour publier un post';
-          // Rediriger vers la page de connexion si nécessaire
-        }
-        
-        alert(errorMessage);
-        this.isSubmitting = false;
+        console.error('Error getting current user:', error);
+        this.error = 'Erreur lors de la récupération de l\'utilisateur';
       }
     });
   }
 
-  // Réinitialisation du formulaire
-  resetForm() {
-    this.postText = '';
-    this.selectedImage = null;
-    this.selectedVideo = null;
-    this.uploadedFileName = null;
-    this.previewUrl = null;
+  async toggleLike(event: Event) {
+    event.preventDefault();
+    if (!this.post?.id) return;
+
+    try {
+      if (this.isLiked) {
+        await this.postService.unlikePost(this.post.id).toPromise();
+        this.isLiked = false;
+        this.likesCount--;
+      } else {
+        await this.postService.likePost(this.post.id).toPromise();
+        this.isLiked = true;
+        this.likesCount++;
+      }
+    } catch (error) {
+      console.error('Erreur lors du like/unlike:', error);
+      // Optionally show error message to user
+    }
+  }
+
+  viewDetails(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
+    this.displayModal = true;
+    this.loadComments();
+  }
+
+  navigateToProfile(event: Event): void {
+    event.stopPropagation(); // Empêche la propagation vers viewDetails()
+    
+    // Vérifier si l'utilisateur est connecté
+    this.authService.getCurrentUser().subscribe({
+      next: (currentUser) => {
+        if (this.post?.user?.id) {
+          this.router.navigate(['/profil', this.post.user.id]);
+        }
+      },
+      error: (error) => {
+        console.error('Erreur lors de la vérification de l\'authentification:', error);
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  private async checkIfLiked() {
+    if (!this.post?.id) return;
+    try {
+      const isLiked = await this.postService.checkIfLiked(this.post.id).toPromise();
+      this.isLiked = !!isLiked;
+    } catch (error) {
+      console.error('Erreur lors de la vérification du like:', error);
+    }
+  }
+
+  private async countLikes() {
+    if (!this.post?.id) return;
+    try {
+      const count = await this.postService.getLikesCount(this.post.id).toPromise();
+      this.likesCount = count || 0;
+    } catch (error) {
+      console.error('Erreur lors du comptage des likes:', error);
+    }
+  }
+
+  private countComments(): void {
+    if (this.post?.id) {
+      this.postService.getCommentsCount(this.post.id).subscribe({
+        next: (count) => {
+          if (this.post) {
+            this.post.comments_count = count;
+          }
+        },
+        error: (error) => {
+          console.error('Erreur lors du comptage des commentaires:', error);
+        }
+      });
+    }
+  }
+
+  loadComments(): void {
+    if (!this.post?.id) return;
+    
+    this.isLoadingComments = true;
+    this.postService.getComments(this.post.id).subscribe({
+      next: (comments) => {
+        this.comments = comments;
+        this.isLoadingComments = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des commentaires:', error);
+        this.isLoadingComments = false;
+      }
+    });
+  }
+
+  showComments(): void {
+    this.displayModal = true;
+    this.loadComments();
+  }
+
+  submitComment(): void {
+    if (!this.commentText.trim() || !this.post?.id || this.isSubmittingComment) {
+      return;
+    }
+
+    this.isSubmittingComment = true;
+    this.postService.addComment(this.post.id, this.commentText).subscribe({
+      next: (response) => {
+        this.commentText = '';
+        this.loadComments(); // Recharger les commentaires après l'ajout
+        this.isSubmittingComment = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors de l\'ajout du commentaire:', error);
+        this.isSubmittingComment = false;
+      }
+    });
   }
 }

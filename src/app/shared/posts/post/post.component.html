@@ -1,53 +1,180 @@
-<div class="Post flex flex-col w-full bg-slate-600 p-4 rounded-lg space-y-4">
-    <!-- Section de l'avatar et du champ de texte -->
-    <div class="flex gap-3 items-center">
-        <img src="assets/images/profil_anime.jpeg" alt="" class="profil-photo">
-        <input type="text" 
-               [(ngModel)]="postText"
-               placeholder="Ecrivez quelque chose ici ..." 
-               class="w-full p-2 rounded-lg bg-slate-700 text-white placeholder-gray-400 focus:ring-2 focus:ring-amber-800">
-    </div>
-
-    <!-- Prévisualisation de l'image -->
-    <div *ngIf="previewUrl" class="mt-2 relative">
-        <img [src]="previewUrl" 
-             alt="Prévisualisation" 
-             class="rounded-lg max-h-48 w-auto">
-        <button (click)="resetForm()" 
-                class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center">
-            <span>&times;</span>
-        </button>
-    </div>
-    
-    <!-- Section des boutons de fonctionnalité -->
-    <div class="flex justify-between items-center mt-2">
-        <!-- Bouton Photo pour télécharger une image -->
-        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerImageUpload()">
-            <img src="assets/images/image-icon.png" alt="Photo" class="w-6 h-6 button-file">
-            <span class="text-gray-300 hover:text-white">Photo</span>
+<div *ngIf="post" class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+    <!-- En-tête du post -->
+    <div class="p-4">
+        <div class="flex items-center space-x-3">
+            <img [src]="post.user?.profile_picture || 'assets/images/profil.jpeg'"
+                 [alt]="post.user?.username"
+                 (click)="navigateToProfile($event)"
+                 class="w-10 h-10 rounded-full object-cover cursor-pointer hover:opacity-80">
+            <div class="flex-grow">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-semibold text-gray-800 cursor-pointer hover:text-amber-800" 
+                        (click)="navigateToProfile($event)">
+                        {{ post.user?.username }}
+                    </h3>
+                    <p class="text-sm text-gray-500">{{ post.created_at | timeAgo }}</p>
+                </div>
+                <p class="text-sm text-gray-600">
+                    {{ post.user?.role === 'formateur' ? 'Formateur' : 
+                       post.user?.role === 'info_manager' ? 'Info Manager' : 'Apprenant' }}
+                </p>
+            </div>
         </div>
+        
+        <!-- Contenu du post -->
+        <p class="mt-3 text-gray-800">{{ post.text || post.content }}</p>
+    </div>
 
-        <!-- Bouton Vidéo pour télécharger une vidéo -->
-        <div class="flex items-center gap-2 cursor-pointer" (click)="triggerVideoUpload()">
-            <img src="assets/images/video-icon.png" alt="Vidéo" class="w-6 h-6 button-file">
-            <span class="text-gray-300 hover:text-white">Vidéo</span>
+    <!-- Media du post -->
+    <div *ngIf="post.image_url || post.video_url" class="border-t border-gray-300">
+        <img *ngIf="post.image_url" 
+             [src]="post.image_url" 
+             [alt]="'Post image by ' + post.user?.username"
+             class="w-full h-auto object-cover cursor-pointer"
+             (click)="viewDetails($event)">
+        <div *ngIf="post.video_url" 
+             class="relative h-auto bg-gray-800 flex items-center justify-center cursor-pointer"
+             (click)="viewDetails($event)">
+            <i class="pi pi-play text-4xl text-white"></i>
+            <span class="text-white text-sm mt-2">Cliquez pour voir la vidéo</span>
         </div>
-
-        <!-- Bouton Poster -->
-        <button (click)="onPost()" 
-                [disabled]="isSubmitting"
-                class="flex items-center gap-2 bg-amber-800 text-white px-4 py-2 rounded-lg hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-50 disabled:cursor-not-allowed">
-            <img src="assets/images/post-icon.png" alt="Poster" class="w-5 h-5 button-file">
-            <span>{{ isSubmitting ? 'Publication...' : 'Poster' }}</span>
-        </button>
     </div>
 
-    <!-- Texte pour afficher le nom du fichier sélectionné -->
-    <div *ngIf="uploadedFileName" class="text-sm text-gray-100 mt-2">
-        Fichier sélectionné : {{ uploadedFileName }}
+    <!-- Actions du post -->
+    <div class="flex items-center justify-between px-4 py-3 border-t border-gray-300">
+        <div class="flex items-center gap-6">
+            <!-- Bouton Like -->
+            <div class="flex items-center gap-2">
+                <button (click)="toggleLike($event)" 
+                        class="flex items-center gap-1 focus:outline-none transition-colors"
+                        [ngClass]="{'text-amber-700': isLiked, 'text-gray-500 hover:text-amber-700': !isLiked}">
+                    <i class="pi" [ngClass]="{'pi-heart-fill': isLiked, 'pi-heart': !isLiked}"></i>
+                    <span class="text-sm">{{ likesCount }}</span>
+                </button>
+            </div>
+            
+            <!-- Bouton Commentaire -->
+            <div class="flex items-center gap-2">
+                <button (click)="showComments()" 
+                        class="flex items-center gap-1 text-gray-500 hover:text-amber-700 focus:outline-none transition-colors">
+                    <i class="pi pi-comments"></i>
+                    <span class="text-sm">{{ post.comments_count || 0 }}</span>
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Inputs cachés pour uploader une image et une vidéo -->
-    <input type="file" id="imageInput" accept="image/*" style="display: none;" (change)="onFilePicked($event, 'image')">
-    <input type="file" id="videoInput" accept="video/*" style="display: none;" (change)="onFilePicked($event, 'video')">
+    <!-- Comment Section -->
+    <div class="p-3 border-t border-gray-300">
+        <div class="flex items-center gap-2">
+            <div class="relative flex-grow">
+                <input type="text" 
+                       [(ngModel)]="commentText"
+                       placeholder="Écrire un commentaire..." 
+                       class="w-full py-1.5 px-3 pr-10 text-sm border border-gray-300 rounded-full focus:ring-1 focus:ring-amber-600 focus:border-amber-600 transition-colors"
+                       (keyup.enter)="submitComment()">
+                <button (click)="submitComment()"
+                        [disabled]="isSubmittingComment || !commentText.trim()"
+                        class="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 text-amber-800 hover:text-amber-900 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="pi pi-send text-sm" [class.animate-pulse]="isSubmittingComment"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
+
+<!-- Modal pour afficher le post en détail -->
+<p-dialog 
+    [(visible)]="displayModal" 
+    [modal]="true" 
+    [style]="{width: '90vw', maxWidth: '1200px'}"
+    [draggable]="false" 
+    [resizable]="false"
+    styleClass="p-0"
+    [contentStyle]="{'max-height': '90vh', 'overflow-y': 'auto'}"
+    (onHide)="displayModal = false">
+    
+    <div class="flex flex-col md:flex-row gap-4">
+        <!-- Côté gauche : Image/Vidéo -->
+        <div class="w-full md:w-2/3 bg-black flex items-center justify-center">
+            <ng-container *ngIf="post">
+                <img *ngIf="post.image_url" 
+                     [src]="post.image_url" 
+                     [alt]="'Post image by ' + (post.user?.username || 'unknown user')"
+                     class="max-h-[80vh] w-auto object-contain">
+                
+                <video *ngIf="post.video_url" 
+                       [src]="post.video_url" 
+                       controls
+                       class="max-h-[80vh] w-auto">
+                </video>
+            </ng-container>
+        </div>
+
+        <!-- Côté droit : Commentaires -->
+        <div class="w-full md:w-1/3 flex flex-col">
+            <!-- En-tête avec info utilisateur -->
+            <div class="p-4 border-b">
+                <div class="flex items-center space-x-3">
+                    <img [src]="post?.user?.profile_picture || 'assets/images/profil.jpeg'"
+                         [alt]="post?.user?.username"
+                         class="w-10 h-10 rounded-full object-cover">
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center">
+                            <h3 class="font-semibold text-gray-800">{{ post?.user?.username }}</h3>
+                            <p class="text-sm text-gray-500">{{ post?.created_at | timeAgo }}</p>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            {{ post?.user?.role === 'formateur' ? 'Formateur' : 
+                               post?.user?.role === 'info_manager' ? 'Info Manager' : 'Apprenant' }}
+                        </p>
+                    </div>
+                </div>
+                <p class="mt-3 text-gray-800">{{ post?.text || post?.content }}</p>
+            </div>
+
+            <!-- Liste des commentaires -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div *ngIf="isLoadingComments" class="flex justify-center items-center py-4">
+                    <i class="pi pi-spinner pi-spin text-amber-800 text-2xl"></i>
+                </div>
+
+                <div *ngIf="!isLoadingComments && comments.length === 0" class="text-center text-gray-500 py-4">
+                    Aucun commentaire pour le moment
+                </div>
+
+                <div *ngFor="let comment of comments" class="mb-4">
+                    <div class="flex items-start space-x-3">
+                        <img [src]="comment.user?.profile_picture || 'assets/images/profil.jpeg'"
+                             [alt]="comment.user?.username"
+                             class="w-8 h-8 rounded-full object-cover">
+                        <div class="flex-1">
+                            <div class="bg-gray-100 rounded-lg p-3">
+                                <h4 class="font-semibold text-gray-800">{{ comment.user?.username }}</h4>
+                                <p class="text-gray-700">{{ comment.content }}</p>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">{{ comment.created_at | timeAgo }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de commentaire -->
+            <div class="p-4 border-t">
+                <div class="flex items-center gap-2">
+                    <input type="text" 
+                           [(ngModel)]="commentText"
+                           placeholder="Écrire un commentaire..." 
+                           class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-800 focus:border-transparent"
+                           (keyup.enter)="submitComment()">
+                    <button (click)="submitComment()"
+                            [disabled]="isSubmittingComment || !commentText.trim()"
+                            class="bg-amber-800 text-white py-2 px-4 rounded-lg hover:bg-amber-900 focus:outline-none focus:ring-2 focus:ring-amber-800 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <i class="pi pi-send mr-2"></i>
+                        {{ isSubmittingComment ? 'Envoi...' : 'Envoyer' }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</p-dialog>

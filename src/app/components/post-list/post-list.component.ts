@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { PostService, Post } from '../../services/post.service';
+import { PostService } from '../../services/post.service';
+import { Post } from '../../models/post';
 import { AuthService } from '../../services/auth.service';
 import { RouterModule } from '@angular/router';
 
@@ -128,15 +129,23 @@ export class PostListComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = '';
     
+    console.log('Début du chargement des posts');
     this.postService.getPosts().subscribe({
       next: (posts) => {
+        console.log('Posts reçus:', posts);
         this.posts = posts;
         this.loading = false;
       },
       error: (error) => {
-        this.error = 'Erreur lors du chargement des posts';
+        console.error('Erreur détaillée:', error);
+        if (error.status === 401) {
+          this.error = 'Vous devez être connecté pour voir les posts';
+        } else if (error.status === 500) {
+          this.error = 'Erreur serveur lors du chargement des posts';
+        } else {
+          this.error = 'Erreur lors du chargement des posts';
+        }
         this.loading = false;
-        console.error('Error loading posts:', error);
       }
     });
   }

@@ -1,1 +1,100 @@
-<p>post-details works!</p>
+<div class="container mx-auto px-4 py-8">
+    <!-- Loading et Error states -->
+    <div *ngIf="loading" class="flex justify-center items-center min-h-[200px]">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-500"></div>
+    </div>
+
+    <div *ngIf="error" class="bg-red-500 text-white p-4 rounded-lg mb-4">
+        {{ error }}
+    </div>
+
+    <!-- Contenu principal -->
+    <div *ngIf="post && !loading" class="bg-slate-600 rounded-lg overflow-hidden">
+        <!-- En-tête du post -->
+        <div class="p-6">
+            <div class="flex items-center space-x-4">
+                <img [src]="post.user?.profile_picture || 'assets/images/profil_anime.jpeg'" 
+                     [alt]="post.user?.username"
+                     class="w-12 h-12 rounded-full object-cover">
+                <div>
+                    <h2 class="text-xl font-bold text-white">{{ post.user?.username }}</h2>
+                    <p class="text-gray-300">{{ post.created_at | date:'medium' }}</p>
+                </div>
+            </div>
+            
+            <!-- Contenu du post -->
+            <p class="mt-6 text-white text-lg">{{ post.text }}</p>
+        </div>
+
+        <!-- Media du post -->
+        <div *ngIf="post.image_url || post.video_url" class="border-t border-gray-700">
+            <img *ngIf="post.image_url" 
+                 [src]="post.image_url" 
+                 [alt]="'Post image by ' + post.user?.username"
+                 class="w-full max-h-[500px] object-contain bg-slate-800">
+            <video *ngIf="post.video_url" 
+                   [src]="post.video_url" 
+                   controls
+                   class="w-full max-h-[500px] bg-slate-800">
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+        </div>
+
+        <!-- Actions du post -->
+        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-700">
+            <p-button (click)="toggleLike()" 
+                      [text]="true"
+                      [severity]="isLiked ? 'danger' : 'secondary'"
+                      [size]="'large'"
+                      class="flex items-center gap-2">
+                <ng-template pTemplate="icon">
+                    <i class="pi" [ngClass]="{'pi-heart-fill': isLiked, 'pi-heart': !isLiked}"></i>
+                </ng-template>
+                {{ likesCount }} {{ likesCount === 1 ? 'Like' : 'Likes' }}
+            </p-button>
+        </div>
+
+        <!-- Section Commentaires -->
+        <div class="border-t border-gray-700">
+            <!-- Formulaire d'ajout de commentaire -->
+            <div class="p-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Commentaires</h3>
+                <div class="flex gap-3">
+                    <span class="p-input-icon-right flex-1">
+                        <i class="pi pi-send cursor-pointer" (click)="addComment()"></i>
+                        <input type="text" 
+                               pInputText 
+                               [(ngModel)]="newComment" 
+                               placeholder="Écrivez un commentaire..."
+                               class="w-full p-inputtext"
+                               [style]="{'background-color': 'rgb(51, 65, 85)', 'color': 'white', 'border-color': 'rgb(75, 85, 99)'}"
+                               (keyup.enter)="addComment()">
+                    </span>
+                </div>
+            </div>
+
+            <!-- Liste des commentaires -->
+            <div class="space-y-4 p-6 pt-0">
+                <div *ngFor="let comment of comments" 
+                     class="bg-slate-700 rounded-lg p-4">
+                    <div class="flex items-start gap-3">
+                        <img [src]="comment.user?.profile_picture || 'assets/images/profil_anime.jpeg'" 
+                             [alt]="comment.user?.username"
+                             class="w-10 h-10 rounded-full object-cover">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-semibold text-white">{{ comment.user?.username }}</h4>
+                                <span class="text-sm text-gray-400">{{ comment.created_at | date:'medium' }}</span>
+                            </div>
+                            <p class="text-gray-300 mt-2">{{ comment.content }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="comments.length === 0" class="text-center text-gray-400 py-4">
+                    Aucun commentaire pour le moment. Soyez le premier à commenter !
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

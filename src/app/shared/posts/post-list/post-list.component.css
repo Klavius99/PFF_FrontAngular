@@ -1,0 +1,20 @@
+.media-container {
+    @apply my-4 flex justify-center items-center overflow-hidden;
+    max-height: 500px;
+}
+
+.media-container img,
+.media-container video {
+    @apply shadow-lg;
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    background-color: #f3f4f6;
+    border-radius: 0.5rem;
+}
+
+/* Style pour le conteneur de vidéo */
+video {
+    width: 100%;
+    max-height: 500px;
+}

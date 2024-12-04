@@ -13,7 +13,7 @@ import { AuthService } from '../../services/auth.service';
 })
 export class NavbarComponent implements OnInit {
   userName: string = '';
-  userPhoto: string = 'assets/images/profil_anime.jpeg';
+  userPhoto: string = 'assets/images/profil.jpeg';
   isMenuOpen = false;
   userRole: string = '';
   isLoggedIn = false;
