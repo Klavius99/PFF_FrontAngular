@@ -5,8 +5,18 @@ import { AuthService } from '../services/auth.service';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   
-  // Ne pas ajouter le token pour les routes d'authentification
-  if (req.url.includes('/api/login') || req.url.includes('/api/register')) {
+  // Liste des routes publiques
+  const publicRoutes = [
+    'login',
+    'register',
+    'forgot-password',
+    'reset-password'
+  ];
+
+  // Vérifie si l'URL correspond à une route publique
+  const isPublicRoute = publicRoutes.some(route => req.url.includes(route));
+  
+  if (isPublicRoute) {
     return next(req);
   }
 

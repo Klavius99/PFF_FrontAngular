@@ -10,8 +10,6 @@ import { Post } from '../models/post';
 })
 export class PostService {
   private apiUrl = environment.apiUrl;
-  
-  // Add this Subject to notify when a post is created
   private postCreatedSubject = new Subject<void>();
   postCreated = this.postCreatedSubject.asObservable();
 
@@ -22,49 +20,47 @@ export class PostService {
 
   createPost(formData: FormData): Observable<Post> {
     const token = this.authService.getToken();
+    console.log('Token pour createPost:', token ? 'Présent' : 'Absent');
+
     if (!token) {
       throw new Error('Token d\'authentification non trouvé');
     }
 
-    // Configuration des en-têtes
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json'
     });
 
-    // Log des détails de la requête
-    console.log('Création de post:');
-    console.log('URL:', `${this.apiUrl}/posts`);
-    console.log('Token:', token);
-    console.log('FormData contents:');
+    // Log des données du formulaire avant l'envoi
+    console.log('Contenu du FormData:');
     formData.forEach((value, key) => {
-      if (value instanceof File) {
-        console.log(key, ':', value.name, value.type, value.size);
+      if (key === 'image' || key === 'video') {
+        const file = value as File;
+        console.log(`${key}:`, {
+          name: file.name,
+          type: file.type,
+          size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
+        });
       } else {
-        console.log(key, ':', value);
+        console.log(`${key}:`, value);
       }
     });
 
-    // Envoi de la requête
     return this.http.post<Post>(`${this.apiUrl}/posts`, formData, { 
       headers,
-      withCredentials: true // Nécessaire car supports_credentials est true dans la config CORS
+      withCredentials: true
     }).pipe(
       tap({
         next: (response) => {
           console.log('Post créé avec succès:', response);
-          // Notify subscribers that a post has been created
           this.postCreatedSubject.next();
         },
         error: (error) => {
-          console.error('Erreur lors de la création du post:', error);
+          console.error('Erreur détaillée lors de la création du post:', error);
           if (error.error) {
             console.error('Message d\'erreur du serveur:', error.error);
-          }
-          console.error('Status:', error.status);
-          console.error('Status Text:', error.statusText);
-          if (error.message) {
-            console.error('Message:', error.message);
+            console.error('Status:', error.status);
+            console.error('Status Text:', error.statusText);
           }
           throw error;
         }
@@ -79,8 +75,7 @@ export class PostService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+      'Authorization': `Bearer ${token}`
     });
 
     return this.http.get<Post>(`${this.apiUrl}/posts/${postId}`, { 
@@ -93,9 +88,6 @@ export class PostService {
         },
         error: (error) => {
           console.error('Erreur lors de la récupération du post:', error);
-          if (error.error) {
-            console.error('Message d\'erreur du serveur:', error.error);
-          }
           throw error;
         }
       })
@@ -104,7 +96,7 @@ export class PostService {
 
   getPosts(): Observable<Post[]> {
     const token = this.authService.getToken();
-    console.log('Token récupéré:', token ? 'Présent' : 'Absent');
+    console.log('Token pour getPosts:', token ? 'Présent' : 'Absent');
     
     if (!token) {
       throw new Error('Token d\'authentification non trouvé');
@@ -115,7 +107,7 @@ export class PostService {
       'Accept': 'application/json'
     });
 
-    console.log('Envoi de la requête GET posts avec headers:', headers);
+    console.log('Envoi de la requête GET /posts avec headers:', headers.keys());
 
     return this.http.get<Post[]>(`${this.apiUrl}/posts`, { 
       headers,
@@ -123,13 +115,16 @@ export class PostService {
     }).pipe(
       tap({
         next: (posts) => {
-          console.log('Posts récupérés avec succès:', posts);
+          console.log('Posts récupérés avec succès. Nombre:', posts.length);
+          console.log('Premier post:', posts[0]);
         },
         error: (error) => {
-          console.error('Erreur lors de la récupération des posts:', error);
+          console.error('Erreur détaillée lors de la récupération des posts:', error);
           if (error.error) {
             console.error('Message d\'erreur du serveur:', error.error);
           }
+          console.error('Status:', error.status);
+          console.error('Status Text:', error.statusText);
           throw error;
         }
       })
@@ -143,8 +138,7 @@ export class PostService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+      'Authorization': `Bearer ${token}`
     });
 
     return this.http.delete(`${this.apiUrl}/posts/${postId}`, { 
@@ -160,11 +154,13 @@ export class PostService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+      'Authorization': `Bearer ${token}`
     });
 
-    return this.http.post(`${this.apiUrl}/posts/${postId}/like`, {}, { headers });
+    return this.http.post(`${this.apiUrl}/posts/${postId}/like`, {}, { 
+      headers,
+      withCredentials: true 
+    });
   }
 
   isLiked(postId: number): Observable<boolean> {
@@ -174,8 +170,7 @@ export class PostService {
     }
 
     const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json'
+      'Authorization': `Bearer ${token}`
     });
 
     return this.http.get<boolean>(`${this.apiUrl}/posts/${postId}/is-liked`, { headers });
@@ -195,12 +190,34 @@ export class PostService {
 
   checkIfLiked(postId: number): Observable<boolean> {
     const token = this.authService.getToken();
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-    return this.http.get<boolean>(`${this.apiUrl}/posts/${postId}/like/check`, { headers });
+    if (!token) {
+      throw new Error('Token d\'authentification non trouvé');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<boolean>(`${this.apiUrl}/posts/${postId}/like/check`, { 
+      headers,
+      withCredentials: true
+    });
   }
 
   getLikesCount(postId: number): Observable<number> {
-    return this.http.get<number>(`${this.apiUrl}/posts/${postId}/likes/count`);
+    const token = this.authService.getToken();
+    if (!token) {
+      throw new Error('Token d\'authentification non trouvé');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<number>(`${this.apiUrl}/posts/${postId}/likes/count`, { 
+      headers,
+      withCredentials: true
+    });
   }
 
   getCommentsCount(postId: number): Observable<number> {
@@ -208,10 +225,54 @@ export class PostService {
   }
 
   getComments(postId: number): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/posts/${postId}/comments`);
+    const token = this.authService.getToken();
+    if (!token) {
+      throw new Error('Token d\'authentification non trouvé');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<any[]>(`${this.apiUrl}/posts/${postId}/comments`, { 
+      headers,
+      withCredentials: true
+    }).pipe(
+      tap({
+        next: (comments) => {
+          console.log('Commentaires récupérés avec succès:', comments);
+        },
+        error: (error) => {
+          console.error('Erreur lors de la récupération des commentaires:', error);
+          throw error;
+        }
+      })
+    );
   }
 
   addComment(postId: number, content: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/posts/${postId}/comments`, { content });
+    const token = this.authService.getToken();
+    if (!token) {
+      throw new Error('Token d\'authentification non trouvé');
+    }
+
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.post(`${this.apiUrl}/posts/${postId}/comments`, { content }, { 
+      headers,
+      withCredentials: true
+    }).pipe(
+      tap({
+        next: (response) => {
+          console.log('Commentaire ajouté avec succès:', response);
+        },
+        error: (error) => {
+          console.error('Erreur lors de l\'ajout du commentaire:', error);
+          throw error;
+        }
+      })
+    );
   }
 }

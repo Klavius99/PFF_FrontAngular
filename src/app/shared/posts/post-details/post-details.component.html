@@ -23,13 +23,13 @@
             </div>
             
             <!-- Contenu du post -->
-            <p class="mt-6 text-white text-lg">{{ post.text }}</p>
+            <p class="mt-6 text-white text-lg">{{ post.content || post.text }}</p>
         </div>
 
         <!-- Media du post -->
         <div *ngIf="post.image_url || post.video_url" class="border-t border-gray-700">
             <img *ngIf="post.image_url" 
-                 [src]="post.image_url" 
+                 [src]="getImageUrl(post.image_url)" 
                  [alt]="'Post image by ' + post.user?.username"
                  class="w-full max-h-[500px] object-contain bg-slate-800">
             <video *ngIf="post.video_url" 

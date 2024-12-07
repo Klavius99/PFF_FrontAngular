@@ -4,7 +4,7 @@ export interface User {
     email: string;
     password?: string;
     profile_picture?: string;
-    role?: 'super_admin' | 'admin' | 'info_manager' | 'formateur' | 'apprenant';
+    role?: 'admin' | 'info_manager' | 'formateur' | 'apprenant';
     status?: boolean;
     created_at?: Date;
 }
@@ -12,4 +12,5 @@ export interface User {
 export interface AuthResponse {
     token: string;
     user: Omit<User, 'password'>;
+    message?: string;
 }

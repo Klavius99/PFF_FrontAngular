@@ -17,11 +17,7 @@ export class UserService {
   ) { }
 
   private getHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      console.error('No token found');
-      throw new Error('No authentication token available');
-    }
+    const token = this.authService.getToken();
     return new HttpHeaders({
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json'
@@ -32,10 +28,17 @@ export class UserService {
     username: string;
     email: string;
     password: string;
-    role: string;
   }): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(`${environment.apiUrl}/admins`, adminData, { headers });
+    return this.http.post(`${this.apiUrl}/admins`, {
+      ...adminData,
+      role: 'admin'
+    }, { headers }).pipe(
+      catchError(error => {
+        console.error('Error creating admin:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   createInfoManager(infoManagerData: {
@@ -44,7 +47,15 @@ export class UserService {
     password: string;
   }): Observable<any> {
     const headers = this.getHeaders();
-    return this.http.post(`${this.apiUrl}/info-managers`, infoManagerData, { headers });
+    return this.http.post(`${this.apiUrl}/info-managers`, {
+      ...infoManagerData,
+      role: 'info_manager'
+    }, { headers }).pipe(
+      catchError(error => {
+        console.error('Error creating info manager:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   getInfoManagers(): Observable<User[]> {
@@ -59,7 +70,32 @@ export class UserService {
 
   getUsers(): Observable<User[]> {
     const headers = this.getHeaders();
-    return this.http.get<User[]>(`${this.apiUrl}/users`, { headers });
+    return this.http.get<User[]>(`${this.apiUrl}/users`, { headers }).pipe(
+      catchError(error => {
+        console.error('Error fetching users:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  getUserStats(): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.get<any>(`${this.apiUrl}/users/stats`, { headers }).pipe(
+      catchError(error => {
+        console.error('Error fetching user stats:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deleteUser(userId: string): Observable<any> {
+    const headers = this.getHeaders();
+    return this.http.delete(`${this.apiUrl}/users/${userId}`, { headers }).pipe(
+      catchError(error => {
+        console.error('Error deleting user:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   getCurrentUser(): Observable<User> {

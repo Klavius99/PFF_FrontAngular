@@ -70,10 +70,6 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  isSuperAdmin(): boolean {
-    return this.userRole === 'super_admin';
-  }
-
   onCreateAdmin() {
     if (this.adminForm.valid) {
       const adminData = {

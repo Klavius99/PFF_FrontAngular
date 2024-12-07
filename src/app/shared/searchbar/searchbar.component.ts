@@ -1,55 +1,70 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SearchService } from '../../services/search.service';
+import { Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-searchbar',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './searchbar.component.html',
-  styleUrl: './searchbar.component.css'
+  styleUrls: ['./searchbar.component.css']
 })
-export class SearchbarComponent implements OnInit{
-  names = [
-    'Ndeye Fatou',
-    'Marie Antoinette',
-    'Abdoulaye Sow' ,
-    'Mbaye Diop' ,
-    'Souleymane Ba' ,
-  ];
-  typingSpeed = 40; // Vitesse de frappe en millisecondes
-  pauseBetweenNames = 2000; // Pause entre chaque nom en millisecondes
+export class SearchbarComponent implements OnInit, OnDestroy {
+  searchQuery: string = '';
+  searchResults: any[] = [];
+  showResults: boolean = false;
+  private searchSubject = new Subject<string>();
+  private destroy$ = new Subject<void>();
 
-  constructor() {}
+  constructor(
+    private searchService: SearchService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-    this.animatePlaceholder();
+  ngOnInit() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.searchService.searchUsers(query)),
+      takeUntil(this.destroy$)
+    ).subscribe(results => {
+      this.searchResults = results;
+      this.showResults = true;
+    });
   }
 
-  animatePlaceholder() {
-    const inputElement = document.getElementById('search-input') as HTMLInputElement;
-    let currentNameIndex = 0;
-    let currentCharIndex = 0;
+  onSearch(event: any) {
+    const query = event.target.value;
+    this.searchQuery = query;
+    this.searchSubject.next(query);
+  }
 
-    const type = () => {
-      if (currentCharIndex < this.names[currentNameIndex].length) {
-        inputElement.placeholder += this.names[currentNameIndex].charAt(currentCharIndex);
-        currentCharIndex++;
-        setTimeout(type, this.typingSpeed);
-      } else {
-        setTimeout(erase, this.pauseBetweenNames);
-      }
-    };
+  onSearchSubmit(event: KeyboardEvent) {
+    if (event.key === 'Enter' && this.searchQuery.trim()) {
+      this.router.navigate(['/SearchPage'], {
+        queryParams: { q: this.searchQuery }
+      });
+      this.showResults = false;
+    }
+  }
 
-    const erase = () => {
-      if (currentCharIndex > 0) {
-        inputElement.placeholder = inputElement.placeholder.slice(0, -1);
-        currentCharIndex--;
-        setTimeout(erase, this.typingSpeed);
-      } else {
-        currentNameIndex = (currentNameIndex + 1) % this.names.length;
-        setTimeout(type, this.typingSpeed);
-      }
-    };
+  selectUser(userId: string) {
+    this.router.navigate(['/profil', userId]);
+    this.showResults = false;
+    this.searchQuery = '';
+  }
 
-    type();
+  hideResults() {
+    setTimeout(() => {
+      this.showResults = false;
+    }, 200);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

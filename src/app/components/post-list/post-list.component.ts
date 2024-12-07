@@ -4,6 +4,7 @@ import { PostService } from '../../services/post.service';
 import { Post } from '../../models/post';
 import { AuthService } from '../../services/auth.service';
 import { RouterModule } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-post-list',
@@ -27,9 +28,10 @@ import { RouterModule } from '@angular/router';
         <div class="flex items-start justify-between mb-4">
           <div class="flex items-center">
             <img 
-              [src]="post.user?.profile_picture || 'assets/images/profil_anime.jpeg'" 
+              [src]="getMediaUrl(post.user?.profile_picture || 'assets/images/profil_anime.jpeg')" 
               alt="Profile" 
               class="h-10 w-10 rounded-full object-cover"
+              (error)="handleMediaError($event)"
             >
             <div class="ml-3">
               <p class="font-semibold text-gray-900">{{ post.user?.username }}</p>
@@ -52,14 +54,27 @@ import { RouterModule } from '@angular/router';
         <!-- Post content -->
         <p class="text-gray-800 mb-4 whitespace-pre-wrap">{{ post.content }}</p>
 
-        <!-- Post image -->
-        <div *ngIf="post.image_url" class="mb-4">
+        <!-- Post media -->
+        <div *ngIf="post.image_url || post.video_url" class="mb-4">
+          <!-- Image -->
           <img 
-            [src]="post.image_url" 
+            *ngIf="post.image_url" 
+            [src]="getMediaUrl(post.image_url)" 
             alt="Post image" 
             class="rounded-lg max-h-96 w-full object-cover"
-            (click)="openImage(post.image_url)"
+            (error)="handleMediaError($event)"
           >
+          <!-- Video -->
+          <video 
+            *ngIf="post.video_url" 
+            [src]="getMediaUrl(post.video_url)" 
+            class="rounded-lg max-h-96 w-full"
+            controls
+            preload="metadata"
+            (error)="handleMediaError($event)"
+          >
+            Votre navigateur ne supporte pas la lecture de vidéos.
+          </video>
         </div>
 
         <!-- Post footer -->
@@ -98,6 +113,7 @@ export class PostListComponent implements OnInit, OnDestroy {
   error = '';
   currentUser: any;
   private postCreatedListener: any;
+  private apiUrl = environment.apiUrl;
 
   constructor(
     private postService: PostService,
@@ -208,5 +224,25 @@ export class PostListComponent implements OnInit, OnDestroy {
 
   openImage(imageUrl: string) {
     window.open(imageUrl, '_blank');
+  }
+
+  getMediaUrl(url: string | null): string {
+    if (!url) return '';
+    // Si l'URL est déjà absolue, la retourner telle quelle
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    // Sinon, construire l'URL complète
+    const baseUrl = this.apiUrl.replace('/api', '');
+    return `${baseUrl}${url}`;
+  }
+
+  handleMediaError(event: any) {
+    const mediaElement = event.target;
+    console.error('Erreur de chargement du média:', {
+      src: mediaElement.src,
+      type: mediaElement.tagName.toLowerCase()
+    });
+    mediaElement.style.display = 'none';
   }
 }

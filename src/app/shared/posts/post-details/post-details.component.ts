@@ -9,6 +9,7 @@ import { Comment } from '../../../models/comment';
 import { PostService } from '../../../services/post.service';
 import { CommentService } from '../../../services/comment.service';
 import { AuthService } from '../../../services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-post-details',
@@ -151,6 +152,12 @@ export class PostDetailsComponent implements OnInit {
         this.error = 'Erreur lors du comptage des likes';
       }
     });
+  }
+
+  getImageUrl(url: string | null): string {
+    if (!url) return 'assets/images/default-post.jpg';
+    if (url.startsWith('http')) return url;
+    return `${environment.apiUrl.replace('/api', '')}/${url}`;
   }
 
   goBack(): void {

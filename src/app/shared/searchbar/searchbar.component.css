@@ -24,9 +24,49 @@ img.h-6.w-6 {
   pointer-events: none; /* L'icône est cliquable uniquement via le champ de recherche */
 }
 
+.search-results {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-height: 400px;
+  overflow-y: auto;
+}
 
+.search-result-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
 
+.search-result-item:hover {
+  background-color: #f3f4f6;
+}
 
+.user-photo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Personnalisation de la barre de défilement */
+.search-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.search-results::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
 
 /* Les Media Queries */
 
@@ -49,5 +89,3 @@ img.h-6.w-6 {
 @media (min-width: 1025px) and (max-width: 1280px) {
 
 }
-
-  

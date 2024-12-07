@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, AfterViewInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -9,6 +9,7 @@ import { PostService } from '../../../services/post.service';
 import { AuthService } from '../../../services/auth.service';
 import { PostModule } from './post.module';
 import { TimeAgoPipe } from './time-ago.pipe';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-post',
@@ -23,7 +24,7 @@ import { TimeAgoPipe } from './time-ago.pipe';
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.css']
 })
-export class PostComponent implements OnInit {
+export class PostComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() post?: Post;
   isLiked: boolean = false;
   likesCount: number = 0;
@@ -34,6 +35,12 @@ export class PostComponent implements OnInit {
   displayModal: boolean = false;
   comments: any[] = [];
   isLoadingComments: boolean = false;
+  @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
+  
+  isPlaying: boolean = false;
+  isMuted: boolean = true;
+  videoProgress: number = 0;
+  private observer: IntersectionObserver | null = null;
 
   constructor(
     private postService: PostService,
@@ -49,6 +56,19 @@ export class PostComponent implements OnInit {
       this.countComments();
     }
     this.getCurrentUser();
+  }
+
+  ngAfterViewInit() {
+    if (this.post?.video_url) {
+      this.setupVideoIntersectionObserver();
+      this.setupVideoProgress();
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.observer) {
+      this.observer.disconnect();
+    }
   }
 
   private getCurrentUser(): void {
@@ -172,14 +192,102 @@ export class PostComponent implements OnInit {
     this.isSubmittingComment = true;
     this.postService.addComment(this.post.id, this.commentText).subscribe({
       next: (response) => {
+        console.log('Commentaire ajouté:', response);
         this.commentText = '';
+        if (this.post) {
+          this.post.comments_count = (this.post.comments_count || 0) + 1;
+        }
         this.loadComments(); // Recharger les commentaires après l'ajout
         this.isSubmittingComment = false;
       },
       error: (error) => {
         console.error('Erreur lors de l\'ajout du commentaire:', error);
+        // Afficher un message d'erreur à l'utilisateur
+        alert('Une erreur est survenue lors de l\'ajout du commentaire. Veuillez réessayer.');
         this.isSubmittingComment = false;
       }
     });
+  }
+
+  private setupVideoProgress() {
+    if (this.videoPlayer?.nativeElement) {
+      this.videoPlayer.nativeElement.addEventListener('timeupdate', () => {
+        const video = this.videoPlayer.nativeElement;
+        this.videoProgress = (video.currentTime / video.duration) * 100;
+      });
+    }
+  }
+
+  private setupVideoIntersectionObserver() {
+    if (!this.videoPlayer?.nativeElement) return;
+
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.5
+    };
+
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          if (this.videoPlayer?.nativeElement) {
+            this.videoPlayer.nativeElement.play()
+              .then(() => {
+                this.isPlaying = true;
+              })
+              .catch(error => {
+                console.error('Error playing video:', error);
+              });
+          }
+        } else {
+          if (this.videoPlayer?.nativeElement) {
+            this.videoPlayer.nativeElement.pause();
+            this.isPlaying = false;
+          }
+        }
+      });
+    }, options);
+
+    this.observer.observe(this.videoPlayer.nativeElement);
+  }
+
+  playVideo() {
+    if (this.videoPlayer?.nativeElement) {
+      this.videoPlayer.nativeElement.play()
+        .then(() => {
+          this.isPlaying = true;
+        })
+        .catch(error => {
+          console.error('Error playing video:', error);
+        });
+    }
+  }
+
+  pauseVideo() {
+    if (this.videoPlayer?.nativeElement) {
+      this.videoPlayer.nativeElement.pause();
+      this.isPlaying = false;
+    }
+  }
+
+  toggleVideo() {
+    if (this.isPlaying) {
+      this.pauseVideo();
+    } else {
+      this.playVideo();
+    }
+  }
+
+  toggleMute() {
+    if (this.videoPlayer?.nativeElement) {
+      this.videoPlayer.nativeElement.muted = !this.videoPlayer.nativeElement.muted;
+      this.isMuted = this.videoPlayer.nativeElement.muted;
+    }
+  }
+
+  getImageUrl(url: string | null): string {
+    if (!url) return 'assets/images/default-post.jpg';
+    if (url.startsWith('http')) return url;
+    return `${environment.apiUrl.replace('/api', '')}/${url}`;
   }
 }

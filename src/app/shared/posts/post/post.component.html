@@ -22,21 +22,43 @@
         </div>
         
         <!-- Contenu du post -->
-        <p class="mt-3 text-gray-800">{{ post.text || post.content }}</p>
+        <p class="mt-3 text-gray-800">{{ post.content || post.text }}</p>
     </div>
 
     <!-- Media du post -->
     <div *ngIf="post.image_url || post.video_url" class="border-t border-gray-300">
         <img *ngIf="post.image_url" 
-             [src]="post.image_url" 
+             [src]="getImageUrl(post.image_url)" 
              [alt]="'Post image by ' + post.user?.username"
              class="w-full h-auto object-cover cursor-pointer"
              (click)="viewDetails($event)">
+        
+        <!-- Nouveau lecteur vidéo -->
         <div *ngIf="post.video_url" 
-             class="relative h-auto bg-gray-800 flex items-center justify-center cursor-pointer"
-             (click)="viewDetails($event)">
-            <i class="pi pi-play text-4xl text-white"></i>
-            <span class="text-white text-sm mt-2">Cliquez pour voir la vidéo</span>
+             class="relative w-full aspect-video bg-black">
+            <video #videoPlayer
+                   [src]="post.video_url"
+                   class="w-full h-full object-contain"
+                   preload="metadata"
+                   [muted]="true"
+                   [loop]="true"
+                   playsinline>
+            </video>
+            <!-- Overlay pour les contrôles personnalisés -->
+            <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40 transition-opacity"
+                 [class.opacity-0]="isPlaying"
+                 [class.hover:opacity-100]="isPlaying"
+                 (click)="toggleVideo()">
+                <button class="text-white text-6xl opacity-80 hover:opacity-100 transition-opacity"
+                        [class.hidden]="isPlaying">
+                    <i class="pi" [ngClass]="{'pi-play': !isPlaying, 'pi-pause': isPlaying}"></i>
+                </button>
+            </div>
+            <!-- Indicateur de son -->
+            <button class="absolute bottom-4 right-4 text-white text-xl bg-black bg-opacity-50 p-2 rounded-full hover:bg-opacity-70 transition-all"
+                    (click)="toggleMute()">
+                <i class="pi" [ngClass]="{'pi-volume-off': isMuted, 'pi-volume-up': !isMuted}"></i>
+            </button>
         </div>
     </div>
 
@@ -99,7 +121,7 @@
         <div class="w-full md:w-2/3 bg-black flex items-center justify-center">
             <ng-container *ngIf="post">
                 <img *ngIf="post.image_url" 
-                     [src]="post.image_url" 
+                     [src]="getImageUrl(post.image_url)" 
                      [alt]="'Post image by ' + (post.user?.username || 'unknown user')"
                      class="max-h-[80vh] w-auto object-contain">
                 
@@ -130,7 +152,7 @@
                         </p>
                     </div>
                 </div>
-                <p class="mt-3 text-gray-800">{{ post?.text || post?.content }}</p>
+                <p class="mt-3 text-gray-800">{{ post?.content || post?.text }}</p>
             </div>
 
             <!-- Liste des commentaires -->

@@ -25,7 +25,6 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
       }),
       map(hasRole => {
         if (!hasRole) {
-          // Récupérer l'utilisateur actuel pour la redirection basée sur le rôle
           const currentUser = authService.getCurrentUser();
           currentUser.pipe(take(1)).subscribe(user => {
             if (user) {
@@ -33,15 +32,14 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
               
               // Redirection basée sur le rôle
               switch (user.role) {
-                case 'super_admin':
                 case 'admin':
-                  router.navigate(['/dashboard-admin']);
+                  router.navigate(['/dashboard/admin']);
                   break;
                 case 'info_manager':
-                  router.navigate(['/dashboard-info']);
+                  router.navigate(['/dashboard/info-manager']);
                   break;
                 default:
-                  router.navigate(['/dashboard']);
+                  router.navigate(['/dashboard/default']);
               }
             }
           });

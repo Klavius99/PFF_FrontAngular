@@ -40,26 +40,22 @@ export class LoginComponent {
       next: (response) => {
         // Redirection selon le rôle
         switch (response.user.role) {
-          case 'super_admin':
-            this.router.navigate(['/super-admin']);
-            break;
           case 'admin':
-            this.router.navigate(['/dashboard-admin']);
+            this.router.navigate(['/dashboard/admin']);
             break;
           case 'info_manager':
-            this.router.navigate(['/dashboard-info']);
+            this.router.navigate(['/dashboard/info-manager']);
             break;
           case 'formateur':
           case 'apprenant':
-            this.router.navigate(['/dashboard']);
-            break;
           default:
-            this.errorMessage = 'Rôle non reconnu';
+            this.router.navigate(['/dashboard/default']);
             break;
         }
       },
-      error: (err) => {
-        if (err.status === 401) {
+      error: (error) => {
+        console.error('Erreur de connexion:', error);
+        if (error.status === 401) {
           this.errorMessage = 'Email ou mot de passe incorrect';
         } else {
           this.errorMessage = 'Une erreur est survenue lors de la connexion';

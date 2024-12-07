@@ -109,55 +109,65 @@ export class CreatePostComponent {
     videoInput.click();
   }
 
-  onFilePicked(event: Event, type: 'image' | 'video') {
-    const file = (event.target as HTMLInputElement).files?.[0];
-    if (!file) return;
+  onFilePicked(event: Event, type: 'image' | 'video'): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
 
-    // Réinitialiser les erreurs précédentes
-    this.error = null;
+    const file = input.files[0];
+    const fileSize = file.size;
+    const fileType = file.type;
 
-    // Vérifier le type de fichier
+    console.log(`Fichier sélectionné (${type}):`, {
+      name: file.name,
+      type: fileType,
+      size: `${(fileSize / 1024 / 1024).toFixed(2)} MB`
+    });
+
+    // Vérification du type de fichier
+    const allowedTypes = type === 'image' ? this.ALLOWED_IMAGE_TYPES : this.ALLOWED_VIDEO_TYPES;
+    if (!allowedTypes.includes(fileType)) {
+      this.error = `Type de fichier non supporté. Types acceptés : ${allowedTypes.join(', ')}`;
+      console.error(this.error);
+      this.resetForm();
+      return;
+    }
+
+    // Vérification de la taille du fichier
+    const maxSize = type === 'image' ? this.MAX_IMAGE_SIZE : this.MAX_VIDEO_SIZE;
+    if (fileSize > maxSize) {
+      const maxSizeMB = maxSize / (1024 * 1024);
+      this.error = `Le fichier est trop volumineux. Taille maximale : ${maxSizeMB}MB`;
+      console.error(this.error);
+      this.resetForm();
+      return;
+    }
+
+    // Mise à jour des variables
     if (type === 'image') {
-      if (!this.ALLOWED_IMAGE_TYPES.includes(file.type)) {
-        this.error = 'Type de fichier non autorisé. Veuillez sélectionner une image (JPEG, PNG, GIF)';
-        return;
-      }
-      if (file.size > this.MAX_IMAGE_SIZE) {
-        this.error = 'L\'image est trop volumineuse. La taille maximale est de 10MB';
-        return;
-      }
       this.selectedImage = file;
       this.selectedVideo = null;
+      // Création de l'URL de prévisualisation
+      this.createPreview(file);
     } else {
-      if (!this.ALLOWED_VIDEO_TYPES.includes(file.type)) {
-        this.error = 'Type de fichier non autorisé. Veuillez sélectionner une vidéo (MP4, MOV, AVI, MKV, WEBM)';
-        return;
-      }
-      if (file.size > this.MAX_VIDEO_SIZE) {
-        this.error = 'La vidéo est trop volumineuse. La taille maximale est de 500MB';
-        return;
-      }
       this.selectedVideo = file;
       this.selectedImage = null;
+      this.previewUrl = null;
     }
 
     this.uploadedFileName = file.name;
-
-    // Créer une URL pour la prévisualisation si c'est une image
-    if (type === 'image') {
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.previewUrl = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    } else {
-      this.previewUrl = null;
-    }
   }
 
-  onPost() {
+  private createPreview(file: File): void {
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onPost(): void {
     if (!this.postText.trim() && !this.selectedImage && !this.selectedVideo) {
-      this.error = 'Veuillez ajouter du texte, une image ou une vidéo';
+      console.error('Aucun contenu à poster');
       return;
     }
 
@@ -174,6 +184,19 @@ export class CreatePostComponent {
       formData.append('video', this.selectedVideo);
     }
 
+    console.log('Envoi du post avec les données suivantes:');
+    formData.forEach((value, key) => {
+      if (value instanceof File) {
+        console.log(`${key}:`, {
+          name: value.name,
+          type: value.type,
+          size: `${(value.size / 1024 / 1024).toFixed(2)} MB`
+        });
+      } else {
+        console.log(`${key}:`, value);
+      }
+    });
+
     this.postService.createPost(formData).subscribe({
       next: (response) => {
         console.log('Post créé avec succès:', response);
@@ -182,7 +205,11 @@ export class CreatePostComponent {
       },
       error: (error) => {
         console.error('Erreur lors de la création du post:', error);
-        this.error = 'Une erreur est survenue lors de la création du post';
+        if (error.error?.message) {
+          this.error = error.error.message;
+        } else {
+          this.error = 'Une erreur est survenue lors de la création du post';
+        }
         this.isSubmitting = false;
       }
     });
