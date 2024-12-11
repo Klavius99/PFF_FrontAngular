@@ -7,8 +7,75 @@
 </head>
 <body>
     <app-navbar></app-navbar>
-    <div class="">
-        
+    <div class="flex">
+
+        <div class="flex mt-11 ml-12 p-4">
+            <!-- Cadre du post -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden w-full max-w-md">
+                <!-- En-tête du post -->
+                <div class="p-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="assets/images/profil.jpeg" alt="User Photo" class="w-10 h-10 rounded-full object-cover cursor-pointer hover:opacity-80">
+                        <div class="flex-grow">
+                            <div class="flex justify-between items-center">
+                                <p class="text-sm text-gray-600">Info Manager</p>     
+                                <p class="text-sm text-gray-500">il y a 12 jours</p>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu du post -->
+                    <p class="mt-3 text-gray-800">Participez au Hackaton 2024 qui se déroulera le 15 janvier. Inscrivez-vous dès maintenant pour ne pas manquer cette opportunité !</p>
+                </div>
+    
+                <!-- Media du post -->
+                <div class="border-t border-gray-300">
+                    <img src="assets/images/hackaton2024.jpg" alt="Hackaton 2024" class="w-full h-auto object-cover cursor-pointer">
+                </div>
+    
+                <!-- Actions du post -->
+                <div class="flex items-center justify-between px-4 py-3 border-t border-gray-300">
+                    <div class="flex items-center gap-6">
+                        <!-- Bouton Like -->
+                        <div class="flex items-center gap-2">
+                            <button class="flex items-center gap-1 text-gray-500 hover:text-amber-700 focus:outline-none transition-colors">
+                                <i class="pi pi-heart"></i>
+                                <span class="text-sm">0</span>
+                            </button>
+                        </div>
+                        
+                        <!-- Bouton Commentaire -->
+                        <div class="flex items-center gap-2">
+                            <button class="flex items-center gap-1 text-gray-500 hover:text-amber-700 focus:outline-none transition-colors">
+                                <i class="pi pi-comments"></i>
+                                <span class="text-sm">0</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Section Commentaires -->
+                <div class="p-3 border-t border-gray-300">
+                    <div class="flex items-center gap-2">
+                        <div class="relative flex-grow">
+                            <input type="text" placeholder="Écrire un commentaire..." class="w-full py-1.5 px-3 pr-10 text-sm border border-gray-300 rounded-full focus:ring-1 focus:ring-amber-600 focus:border-amber-600 transition-colors">
+                            <button class="absolute right-1 top-1/2 -translate-y-1/2 p-1.5 text-amber-800 hover:text-amber-900 focus:outline-none">
+                                <i class="pi pi-send text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col w-max mt-16 text-center">
+            <h3>Commentaires</h3>
+            <div class="w-96 h-96 ">
+                aucun commentaire pour l'instant
+            </div>
+        </div>
     </div>
+    
 </body>
 </html>

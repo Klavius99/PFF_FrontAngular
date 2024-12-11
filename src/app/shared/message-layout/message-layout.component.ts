@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './message-layout.component.css'
 })
 export class MessageLayoutComponent {
-
+    
 }

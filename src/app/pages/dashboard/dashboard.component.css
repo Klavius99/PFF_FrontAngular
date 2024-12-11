@@ -22,7 +22,9 @@
     
 }
 
-
+.message {
+    box-shadow: 0 0 30px 20px rgba(141, 86, 3, 0.26);
+}
 
 /* Les Media Queries */
 

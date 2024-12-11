@@ -50,14 +50,14 @@ export class AuthService {
     this.currentUserSubject.next(response.user);
   }
 
-  logout(): Observable<void> {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    this.currentUserSubject.next(null);
-    return new Observable<void>(observer => {
-      observer.next();
-      observer.complete();
-    });
+  logout(): Observable<any> {
+    return this.http.post(this.apiUrl, {}).pipe(
+      tap(() => {
+        // Supprimez les informations d'authentification (token, user, etc.) du stockage local
+        localStorage.removeItem('token'); // ou sessionStorage selon votre implémentation
+        this.router.navigate(['/login']); // Redirigez vers la page de connexion après déconnexion
+      })
+    );
   }
 
   isAuthenticated(): Observable<boolean> {
@@ -95,5 +95,29 @@ export class AuthService {
 
   resetPassword(token: string, newPassword: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/reset-password`, { token, newPassword });
+  }
+
+  getFormateurs(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/formateurs`);
+  }
+
+  getGroupes(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/groupes`);
+  }
+
+  deleteFormateur(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/formateurs/${id}`);
+  }
+
+  deleteFormateurFromApi(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/formateurs/${id}`);
+  }
+
+  deleteGroupeFromApi(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/groupes/${id}`);
+  }
+
+  deleteGroupe(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/groupes/${id}`);
   }
 }

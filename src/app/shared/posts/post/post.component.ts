@@ -36,7 +36,7 @@ export class PostComponent implements OnInit, AfterViewInit, OnDestroy {
   comments: any[] = [];
   isLoadingComments: boolean = false;
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
-  
+
   isPlaying: boolean = false;
   isMuted: boolean = true;
   videoProgress: number = 0;
@@ -87,20 +87,28 @@ export class PostComponent implements OnInit, AfterViewInit, OnDestroy {
     event.preventDefault();
     if (!this.post?.id) return;
 
-    try {
-      if (this.isLiked) {
-        await this.postService.unlikePost(this.post.id).toPromise();
-        this.isLiked = false;
-        this.likesCount--;
-      } else {
-        await this.postService.likePost(this.post.id).toPromise();
-        this.isLiked = true;
-        this.likesCount++;
-      }
-    } catch (error) {
-      console.error('Erreur lors du like/unlike:', error);
-      // Optionally show error message to user
+    this.isLiked = !this.isLiked; // Toggle the like status
+
+    // Play the like sound
+    const audio = document.getElementById('likeSound') as HTMLAudioElement;
+    audio.play();
+
+    // Additional logic to update likes count
+    if (this.isLiked) {
+      this.likesCount++;
+    } else {
+      this.likesCount--;
     }
+
+    // Call the service to update like status on the server
+    this.postService.toggleLike(this.post?.id).subscribe({
+      next: () => {
+        console.log('Post liked/unliked successfully');
+      },
+      error: (error) => {
+        console.error('Error liking/unliking post:', error);
+      }
+    });
   }
 
   viewDetails(event?: Event): void {
@@ -113,7 +121,7 @@ export class PostComponent implements OnInit, AfterViewInit, OnDestroy {
 
   navigateToProfile(event: Event): void {
     event.stopPropagation(); // Empêche la propagation vers viewDetails()
-    
+
     // Vérifier si l'utilisateur est connecté
     this.authService.getCurrentUser().subscribe({
       next: (currentUser) => {
@@ -165,7 +173,7 @@ export class PostComponent implements OnInit, AfterViewInit, OnDestroy {
 
   loadComments(): void {
     if (!this.post?.id) return;
-    
+
     this.isLoadingComments = true;
     this.postService.getComments(this.post.id).subscribe({
       next: (comments) => {

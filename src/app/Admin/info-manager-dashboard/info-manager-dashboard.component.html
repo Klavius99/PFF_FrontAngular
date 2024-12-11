@@ -1,1 +1,54 @@
-<p>info-manager-dashboard works!</p>
+<div class="dashboard-container">
+    <nav class="sidebar">
+        <div class="profile-section">
+            <img src="path/to/profile.jpg" alt="Photo de Profil" class="profile-pic">
+            <h3 class="username">Info Manager</h3>
+            <button class="logout-button">Déconnexion</button>
+        </div>
+        <ul class="menu">
+            <li class="menu-item active">Tableau de bord</li>
+            <li class="menu-item">Mes posts</li>
+        </ul>
+    </nav>
+
+    <div class="content-area">
+        <h1 class="dashboard-title">Dashboard Info Manager</h1>
+
+        <div class="post-form">
+            <textarea placeholder="Écrivez votre post ici..." rows="4"></textarea>
+            <button class="post-button">Publier</button>
+        </div>
+
+        <div class="posts-section">
+            <h2>Mes Publications</h2>
+            <div class="post-card">
+                <div class="post-content">
+                    <p class="post-text">Ceci est un exemple de post texte.</p>
+                    <small class="post-date">12/10/2024</small>
+                </div>
+                <div class="comments-section">
+                    <h3>Commentaires</h3>
+                    <div class="comment">
+                        <p>C'est un commentaire sur ce post.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-card">
+                <div class="post-content">
+                    <p class="post-text">Ceci est un exemple de post avec une image.</p>
+                    <img src="path/to/image.jpg" alt="Image du post" class="post-image">
+                    <small class="post-date">12/10/2024</small>
+                </div>
+                <div class="comments-section">
+                    <h3>Commentaires</h3>
+                    <div class="comment">
+                        <p>Un autre commentaire ici.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ajoutez d'autres posts ici -->
+        </div>
+    </div>
+</div>

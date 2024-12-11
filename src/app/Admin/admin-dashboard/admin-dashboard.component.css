@@ -1,22 +1,30 @@
-/* Styles pour les formulaires */
-input.ng-invalid.ng-touched {
-    border-color: #ef4444;
+.link {
+    text-decoration: none;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
 }
 
-input.ng-valid.ng-touched {
-    border-color: #10b981;
+.link:hover {
+    color: white;
 }
 
-/* Styles pour les messages */
-.success-message {
-    @apply bg-green-100 text-green-700 p-4 rounded-md mb-4;
+.link.active {
+    background-color: #d97706;
+    color: #ffffff;
 }
 
-.error-message {
-    @apply bg-red-100 text-red-700 p-4 rounded-md mb-4;
+main {
+    width: 100%;
 }
 
-/* Styles pour les boutons */
-button:disabled {
-    @apply opacity-50 cursor-not-allowed;
+.rounded-full {
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}
+
+.dashboard {
+    margin-bottom: 20px; /* Espacement entre les formulaires */
 }

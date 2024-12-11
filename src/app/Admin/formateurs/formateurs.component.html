@@ -1,0 +1,27 @@
+<table class="min-w-full bg-white">
+  <thead>
+    <tr class="bg-amber-600 text-white">
+      <th class="py-2 px-4">ID</th>
+      <th class="py-2 px-4">Nom</th>
+      <th class="py-2 px-4">Email</th>
+      <th class="py-2 px-4">Groupe Responsable</th>
+      <th class="py-2 px-4">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let formateur of formateurs" class="hover:bg-amber-100">
+      <td class="py-2 px-4">{{ formateur.id }}</td>
+      <td class="py-2 px-4">{{ formateur.nom }}</td>
+      <td class="py-2 px-4">{{ formateur.email }}</td>
+      <td class="py-2 px-4">
+        <select [(ngModel)]="formateur.groupeResponsable" class="border rounded">
+          <option value="" disabled selected>Sélectionner un groupe</option>
+          <option *ngFor="let groupe of groupes" [value]="groupe.nom">{{ groupe.nom }}</option>
+        </select>
+      </td>
+      <td class="py-2 px-4">
+        <button class="bg-red-500 text-white px-2 py-1 rounded">Supprimer</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
